@@ -31,9 +31,9 @@ both void * args and  void* retVal can be set to NULL if not used*/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties);
 
 
-void ChangeTaskProperties(TaskHandle task, TaskProperties properties);
+void ChangeTaskProperties(TaskHandle handle, TaskProperties properties);
 
-void ToggleTaskSuspend(TaskHandle task);
+void ToggleTaskSuspend(TaskHandle handle);
 
 
 #endif
