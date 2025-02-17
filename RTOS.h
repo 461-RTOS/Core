@@ -28,7 +28,7 @@ to a task as a parameter, as well as the stack size (in 32-bit words),
 a void pointer for any arguments that the task function may need
 a pointer to a void pointer to store return values, as well as a TaskProperties object
 both void * args and  void* retVal can be set to NULL if not used*/
-TaskHandle StartTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties);
+TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties);
 
 
 void ChangeTaskProperties(TaskHandle task, TaskProperties properties);
