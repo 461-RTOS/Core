@@ -5,10 +5,12 @@
 #include <stdbool.h>
 
 
+#ifndef TASK_H_ // This helps avoid typedef conflicts where TaskHandle is defined elsewhere in a non-opaque manner
 /*Abstracted from user as a void pointer, Task handle will contain
 the unique Task ID, the stack size (in 32-bit words), saved register contexts,
  as well as other immutable, or user-inaccessible data.*/
 typedef void* TaskHandle;
+#endif
 
 /*Task Properties are defined as mutable, user-accessible properties*/
 typedef struct TaskProperties{
