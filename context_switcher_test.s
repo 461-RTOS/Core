@@ -29,4 +29,4 @@ _start:
 	msr psp, r0 @update psp
 	isb
 	
-	 bx r14 
+	bx r14 
