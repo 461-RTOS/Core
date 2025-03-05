@@ -12,6 +12,7 @@ typedef struct TaskContext{                                 // A pointer to this
         uint8_t contextPtr[sizeof(TaskProperties)];         // This value should never be assigned directly to, this is just a pointer to be used by STMDB instruction in order to write to the context buffer when saving context
         TaskProperties User_Properties;
     };
+    uint32_t lastRunTime;
 }TaskContext;
 
 typedef TaskContext* TaskHandle;
