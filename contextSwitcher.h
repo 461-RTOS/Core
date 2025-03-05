@@ -1,5 +1,6 @@
-#include "interrupt.h"
 #include "RTOS.h"
+#include "interrupt.h"
 #include "task.h"
-#include "queue.h"
+
+void switchHandler(void);
 

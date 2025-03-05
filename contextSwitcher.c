@@ -1,4 +1,7 @@
-void main(void){
+#include "task.h"
+
+
+void switchHandler(void){
     /* 
     if recieve: interrupt
         call function: findMemoryAddress
@@ -9,12 +12,18 @@ void main(void){
         block:pipeline
         flush:pipeline
     */
-   __asm_volitile  (
+   __asm_volatile  (
    "    mrs r0,psp      \n"
    "    isb             \n"
    "                    \n"
-   "    ldr r3,CurrentContext   \n"
-   "    ldr r2,[r3]     \n"
+   "    push {lr}       \n"
+   "    bl getCurrentTask   \n"
+   "    bl getSaveContextPtr    \n"
    "                    \n"
-   )
+   "    stmdb r0!, {r4-r11, sp-lr}    \n"
+   "    bl selectNextTask   \n"
+   "    bl getLoadContextPtr   \n"
+   "    ldmfd r0!, {r4-r11, sp-lr}  \n"
+   "    pop {lr}    \n"
+   );
 }
