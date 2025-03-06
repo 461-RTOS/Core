@@ -5,6 +5,11 @@
 static TaskControlBlock TCB;    // Empty, uninitialized Task Control Block
 
 TaskHandle selectNextTask(void){
+    int i = 0;
+    while (i != sizeof(TCB.tasks)){
+        if (TCB.tasks[i]->lastRunTime > TCB.currentTask->lastRunTime)
+            return TCB.tasks[i];
+    }
     return NULL;                    // Returning NULL until logic to select next task is implemented
 }
 
