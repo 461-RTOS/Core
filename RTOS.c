@@ -1,12 +1,15 @@
 #include "task.h"
 #include <stdlib.h>
 
-/********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************/
+/********************************************************************************************
+*   Returning a task handle, The StartTask() function takes the function pointer            *
+*   to a task as a parameter, as well as the stack size (in 32-bit words),                  *
+*   a void pointer for any arguments that the task function may need                        *
+*   a pointer to a void pointer to store return values, as well as a TaskProperties object  *
+*   both void * args and  void* retVal can be set to NULL if not used                       *
+*********************************************************************************************/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties){
-                                                                            // This is a generic line comment to give more insight on specific lines
+
 }
 
 /********************************************************************************
@@ -26,7 +29,7 @@ void ToggleTaskSuspend(TaskHandle handle){
 }
 
 /********************************************************************************
-*   Returns the suspended state of a task
+*   Returns the suspend state of a task
 *   
 *********************************************************************************/
 bool IsTaskSuspended(TaskHandle handle){
@@ -72,3 +75,18 @@ void OsKill(void){
     // This is a generic line comment to give more insight on specific lines
 }
 
+/********************************************************************************************
+*   Begins an atomic block (disables timer, and appropriate interrupts) for critical sections
+*   
+*********************************************************************************************/
+void AtomicStart(void){
+
+}
+
+/********************************************************************************************
+*   Ends an atomic block (re-enables timer, and appropriate interrupts)
+*   After critical sections are complete
+*********************************************************************************************/
+void AtomicStop(void){
+
+}

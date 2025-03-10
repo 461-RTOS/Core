@@ -38,26 +38,26 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     
 
 
-/********************************************************************************************
-*   This is a generic comment block that will tell us what the following function           *
-*   is supposed to do.                                                                      *
-*********************************************************************************************/
+/********************************************************************************
+*   Updates task handle with new properties
+*   
+*********************************************************************************/
 void ChangeTaskProperties(TaskHandle handle, TaskProperties properties);
 
 
 
-/********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************************/
+/********************************************************************************
+*   Suspends task if active, unsuspends task if suspended
+*   
+*********************************************************************************/
 void ToggleTaskSuspend(TaskHandle handle);
 
 
 
-/********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************************/
+/********************************************************************************
+*   Returns the suspend state of a task
+*   
+*********************************************************************************/
 bool IsTaskSuspended(TaskHandle handle);
 
 
@@ -98,6 +98,19 @@ void OsStop(void);
 *   is supposed to do.
 *********************************************************************************************/
 void OsKill(void);
+
+
+/********************************************************************************************
+*   Begins an atomic block (disables timer, and appropriate interrupts) for critical sections
+*   
+*********************************************************************************************/
+void AtomicStart(void);
+
+/********************************************************************************************
+*   Ends an atomic block (re-enables timer, and appropriate interrupts)
+*   After critical sections are complete
+*********************************************************************************************/
+void AtomicStop(void);
 
 
 
