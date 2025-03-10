@@ -1,4 +1,5 @@
-#include "RTOS.h"
+#include "task.h"
+#include <stdlib.h>
 
 /********************************************************************************
 *   This is a generic comment block that will tell us what the following function
@@ -9,27 +10,27 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
 }
 
 /********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*   Updates task handle with new properties
+*   
 *********************************************************************************/
 void ChangeTaskProperties(TaskHandle handle, TaskProperties properties){
-    // This is a generic line comment to give more insight on specific lines
+    handle->User_Properties = properties;
 }
 
 /********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*   Suspends task if active, unsuspends task if suspended
+*   
 *********************************************************************************/
 void ToggleTaskSuspend(TaskHandle handle){
-    // This is a generic line comment to give more insight on specific lines
+    handle->User_Properties.isSuspended = !handle->User_Properties.isSuspended;
 }
 
 /********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*   Returns the suspended state of a task
+*   
 *********************************************************************************/
 bool IsTaskSuspended(TaskHandle handle){
-    // This is a generic line comment to give more insight on specific lines
+    return handle->User_Properties.isSuspended;
 }
 
 /********************************************************************************
