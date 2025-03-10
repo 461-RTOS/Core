@@ -14,6 +14,8 @@ typedef struct TaskContext{                                 // A pointer to this
         TaskProperties User_Properties;
     };
     uint32_t lastRunTime;
+    void ** retval;                                         // Allows a return value pointer to be stored at a location pointed to by retVal.
+    void * stackTail;                                       // Hold stack tail to free from when deleting a task
 }TaskContext;
 
 typedef TaskContext* TaskHandle;
