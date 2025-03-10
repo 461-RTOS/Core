@@ -9,7 +9,21 @@
 *   both void * args and  void* retVal can be set to NULL if not used                       *
 *********************************************************************************************/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties){
-
+    TaskHandle handle = malloc(sizeof(TaskContext));
+    char * stack; // cast to char for pointer arithmetic
+    if (handle == NULL)
+        return NULL;        // Allocation failed returns NULL
+    handle->User_Properties = properties;
+    stack = malloc((stackSize * 4) + 64);       //
+    if (stack == NULL){
+        free(handle);
+        return NULL;
+    }
+    handle->stackTail = stack;
+    // TODO: Perform pointer arithmetic on allocated stack to store return address, and args value (for R0/arg1)
+    // TODO: Add stack pointer to context buffer (at appropriate offset to be restored to the SP register)
+    // TODO: Add Task handle to the TCB tasks pointer. (Use realloc to dynamically size the array)
+    return handle;
 }
 
 /********************************************************************************
