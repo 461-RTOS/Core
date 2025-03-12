@@ -29,3 +29,14 @@ void * getSaveContextPtr(TaskHandle task){
 void * getLoadContextPtr(TaskHandle task){
     return task->contextBuffer;
 }
+
+bool appendTasktoTCB(TaskHandle task){
+    TaskHandle * newTaskList = realloc(TCB.tasks, sizeof(TaskHandle) * (TCB.taskCount + 1));
+    if (newTaskList == NULL){
+        TCB.taskCount;
+        return false;
+    }
+    TCB.tasks = newTaskList;
+    TCB.tasks[TCB.taskCount++] = task;
+    return true;
+}

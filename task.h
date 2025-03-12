@@ -37,4 +37,8 @@ void * getSaveContextPtr(TaskHandle task);
 
 void * getLoadContextPtr(TaskHandle task);
 
+bool appendTasktoTCB(TaskHandle task);
+
+
+
 #endif
