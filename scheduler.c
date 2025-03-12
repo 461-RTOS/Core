@@ -1,15 +1,9 @@
+#include <stdlib.h>
 #include "RTOS.h"
 #include "interrupt.h"
 #include "task.h"
 
 
-bool taskSwitchInterrupt;//will be true if new task is chosen
-
-void checkSwitch(void){
-    if (taskSwitchInterrupt == true){
-        switchHandler();
-    }
-}
 void switchHandler(void){
     /* 
     Following function saves a current task to be ran later and places a new task from the stack into the registers

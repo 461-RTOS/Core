@@ -4,8 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "RTOS.h"
-
-
+#include "queue.h"
 
 typedef struct TaskContext{                                 // A pointer to this struct can be used as a task handle, for user opacity, this is typedefed sas a void pointer to typedef void* TaskHandle;
     uint8_t contextBuffer[40];                              // This identifier is used to restore context registers by the LDMIA instruction
@@ -24,7 +23,8 @@ typedef TaskContext* TaskHandle;
 typedef struct TaskControlBlock{
     uint32_t taskCount;             // Number of tasks in array
     TaskHandle currentTask;         // Currently Active Task
-    TaskHandle * tasks;             // This is an array of pointers to tasks. We can avoid linked-list structuring, while mantaining Handle IDs if we mantain each handle's pointer, by managing an array to the pointers, rather than changing where the data itself is.
+    TaskHandle * tasks; 
+    QueuePointers taskQueue;            // This is an array of pointers to tasks. We can avoid linked-list structuring, while mantaining Handle IDs if we mantain each handle's pointer, by managing an array to the pointers, rather than changing where the data itself is.
 }TaskControlBlock;
 
 TaskHandle selectNextTask(void);

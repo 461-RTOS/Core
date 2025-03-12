@@ -1,16 +1,21 @@
 #include <stdlib.h>
 #include "task.h"
+#include "queue.h"
+#include "scheduler.h"
 
 
 static TaskControlBlock TCB;    // Empty, uninitialized Task Control Block
 
+
 TaskHandle selectNextTask(void){
-    
-    for (int i = 0; i != TCB.taskCount; i++){
-        if (TCB.tasks[i]->lastRunTime < TCB.currentTask->lastRunTime)
-            if(TCB.tasks[i]->User_Properties.priority > TCB.currentTask->User_Properties.priority)
-                return TCB.tasks[i];
-    }
+    QueueObject *tempTask;
+    tempTask = TCB.taskQueue.qHead; //creating temptask to check queue for valid tasks starting from head
+   while (tempTask->next != NULL){
+        if (tempTask->data->lastRunTime < TCB.currentTask->lastRunTime)
+            TCB.currentTask=tempTask;//set up new task as the current task
+            return tempTask;
+        tempTask = tempTask->next;//increment to next task in queue
+   };
     return NULL;                    // Returning NULL if no task is Selected
 }
 
