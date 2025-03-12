@@ -14,16 +14,30 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     if (handle == NULL)
         return NULL;        // Allocation failed returns NULL
     handle->User_Properties = properties;
-    stack = malloc((stackSize * 4) + 64);       //
+    stack = malloc((stackSize * 4) + 64);           // Allocates [stackSize] 32-bit (4 byte) words for stack space, plus some buffers for internal logic. 
     if (stack == NULL){
         free(handle);
-        return NULL;
+        return NULL;                                // Returns NULL after freeing handle, if stack allocation fails.
     }
     handle->stackTail = stack;
     // TODO: Perform pointer arithmetic on allocated stack to store return address, and args value (for R0/arg1)
     // TODO: Add stack pointer to context buffer (at appropriate offset to be restored to the SP register)
-    // TODO: Add Task handle to the TCB tasks pointer. (Use realloc to dynamically size the array)
-    return handle;
+    // TODO: Add Link Register value to be popped from task as return value if task is designed to run a return routine
+    if (appendTasktoTCB(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
+        return handle;                              // returns handle only after verifying task handle has been added to TCB
+    }
+    free(handle);
+    free(stack);
+    return NULL;                                    // If task is not successfully appended to TCB, stack and handle are freed to avoid memory leaks, and function returns NULL
+}
+
+void returnRoutine(void * retVal){                  // Return routine's address should be appeneded to the new stack where it will be popped as the return address from the task. This will save the return value in r0 register, which will be treated as arg1 of the return-oriented function call routine.
+    TaskHandle currentTask = getCurrentTask();
+    if (currentTask->retval != NULL){
+        *(currentTask->retval) = retVal;            // if a return location was provided (e.g. not NULL), then the void pointer from a return value is stored.
+    }
+    // TODO: clean up task (remove task from TCB, free task context and stack), switch to another task
+    // DO NOT RUN RETURN, THERE IS NOTHING TO RETURN TO. Function must initiate a routine to switch to cleanup and switch to another task.
 }
 
 /********************************************************************************
