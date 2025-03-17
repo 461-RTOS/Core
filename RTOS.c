@@ -1,5 +1,7 @@
 #include "task.h"
+#include "semaphore.h"
 #include <stdlib.h>
+#include "RTOS.h"
 
 /********************************************************************************************
 *   Returning a task handle, The StartTask() function takes the function pointer            *
@@ -38,6 +40,44 @@ void returnRoutine(void * retVal){                  // Return routine's address 
     }
     // TODO: clean up task (remove task from TCB, free task context and stack), switch to another task
     // DO NOT RUN RETURN, THERE IS NOTHING TO RETURN TO. Function must initiate a routine to switch to cleanup and switch to another task.
+}
+
+
+
+SemaphoreHandle createBinarySemaphore(bool acquiredState){      // Returns handle to semaphore. acquiredState: true == acquired, false == released
+    SemaphoreHandle handle = malloc(sizeof(SemaphoreContext));
+    if (!handle){
+        return NULL;                                            // Returns NULL if fails to create semaphore
+    }
+    handle->semaphoreState = (acquiredState) ? 1 : 0;
+    handle->taskQueue.qHead = NULL;
+    handle->taskQueue.qTail = NULL;                             // taskQueue for semaphore starts NULL on both ends (nothing has been added yet)
+    return handle;
+}
+
+OS_Status SemaphoreRelease(SemaphoreHandle handle){
+    if (!handle)
+        return osErrorParameter;                                // if bad semaphore is passed, return with error code
+    handle->semaphoreState = 0;
+    return osOK;
+}
+
+OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
+    TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
+    if (!handle)
+        return osErrorParameter;                            // if bad semaphore is passed, return with error code
+    if (!handle->semaphoreState){                           // if semaphore is free, check for other tasks already on queue, and execute if none available
+        if (handle->taskQueue.qHead == NULL){
+            handle->semaphoreState = 1;
+            return osOK;
+        }
+        else{
+            QueuePush(task);
+            // TODO: halt task [without suspending] (ie put task to sleep until semaphire is released, and acquired by this task)
+        }
+    }
+    // TODO: Implement Semaphore Acquire Logic
+    return osOK;
 }
 
 /********************************************************************************

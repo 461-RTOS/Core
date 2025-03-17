@@ -125,5 +125,13 @@ enum OS_Status{
     osErrorISR
 };
 
+typedef enum OS_Status OS_Status;
+
+SemaphoreHandle createBinarySemaphore(bool acquiredState);
+
+OS_Status SemaphoreRelease(SemaphoreHandle handle);
+
+OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout);
+
 
 #endif
