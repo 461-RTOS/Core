@@ -1,7 +1,7 @@
 #include "task.h"
 #include "semaphore.h"
 #include <stdlib.h>
-#include "RTOS.h"
+#include "RTOS.h" // RTOS.h must be included LAST in order to avoid definition conflicts for opaque types (such as TaskHandle and SemaphoreHandle)
 
 /********************************************************************************************
 *   Returning a task handle, The StartTask() function takes the function pointer            *
