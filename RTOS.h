@@ -12,6 +12,10 @@ the unique Task ID, the stack size (in 32-bit words), saved register contexts,
 typedef void* TaskHandle;
 #endif
 
+#ifndef SEMAPHORE_H_
+typedef void * SemaphoreHandle;
+#endif
+
 /*Task Properties are defined as mutable, user-accessible properties*/
 typedef struct TaskProperties{
     uint8_t priority;
