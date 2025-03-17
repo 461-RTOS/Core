@@ -117,6 +117,13 @@ void AtomicStart(void);
 void AtomicStop(void);
 
 
+enum OS_Status{
+    osOK = 0,
+    osErrorTimeout,
+    osErrorResource,
+    osErrorParameter,
+    osErrorISR
+};
 
 
 #endif
