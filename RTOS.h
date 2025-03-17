@@ -24,6 +24,17 @@ typedef struct TaskProperties{
 }TaskProperties;
 
 
+// OS Status enum for signal definitions
+
+enum OS_Status{
+    osOK = 0,                       // Complete without issues
+    osErrorTimeout,                 // Error: Timeout occurs before completion
+    osErrorResource,                // Error: Resource currently unavailable
+    osErrorParameter,               // Error: Bad Parameter passed (such as NULL)
+    osErrorISR                      // Error: called from an ISR without timeout == 0
+};
+
+typedef enum OS_Status OS_Status;
 
 /*A simple typedef for Task Function Pointers:
 Task functions must take a void pointer as an argument,
@@ -117,15 +128,10 @@ void AtomicStart(void);
 void AtomicStop(void);
 
 
-enum OS_Status{
-    osOK = 0,
-    osErrorTimeout,
-    osErrorResource,
-    osErrorParameter,
-    osErrorISR
-};
+/*********************************************************************************************************
+SEMAPHORE FUNCTIONS
+*********************************************************************************************************/
 
-typedef enum OS_Status OS_Status;
 
 SemaphoreHandle createBinarySemaphore(bool acquiredState);
 
