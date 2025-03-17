@@ -15,8 +15,13 @@ TaskHandle QueuePop(){
 
 /*creates new QueueObjects from given tasks then pushes onto queue from tail*/
 void QueuePush(TaskHandle task){
-    QueueObject newTask;
-    newTask.data = task;
-    newTask.next = NULL; //this is simple enough for now but needs to be updated with new scheduling logic
-    *Queue.qTail->next = newTask;
+    QueueObject* nextTask = malloc(sizeof(QueueObject));
+    if(!nextTask){
+        return;
+    }
+    nextTask->data = task;
+    nextTask->next = NULL;
+    //this is simple enough for now but needs to be updated with new scheduling logic
+    Queue.qTail->next = nextTask;       // adds task to tail of queue
+    Queue.qTail = nextTask;             // moves tail to next task
 }
