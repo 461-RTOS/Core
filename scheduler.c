@@ -3,6 +3,21 @@
 #include "interrupt.h"
 #include "task.h"
 
+static QueuePointers taskQueue;
+
+void SysTick_Handler(void){
+    QueueObject *tempTask;
+    tempTask = taskQueue.qHead;
+    while (tempTask->next != NULL){
+        tempTask->data->lastRunTime = tempTask->data->lastRunTime +1;
+        tempTask = tempTask->next;
+    }
+    PendSV_Handler();
+}
+
+void PendSV_Handler(void){
+    
+}
 
 void switchHandler(void){
     /* 
