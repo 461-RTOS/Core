@@ -37,6 +37,28 @@ void PendSV_Init(void)
 
     // 4. Leave BASEPRI raised until you're ready to start the scheduler
 }
+
+
+
+// Atomic Functions and Statics
+
+static uint32_t prevBasePri;
+static bool isAtomicRunning = false;
+
+AtomicStatus AtomicStart(AtomicBlockLevel level){
+	if (isAtomicRunning){
+		return ATOMIC_NESTED_ERROR;					// Return error if an Atomic Block is currently active
+	}
+	uint32_t tempprevBasePri = __get_BASEPRI();		// Saved locally in case another context tries to modify it at the same time before context switching is disabled
+	__set_BASEPRI(level);							// Sets base priority, disabling at the very least the context switcher
+	prevBasePri = tempprevBasePri;					// previous base priority is saved to be restored when the block ends.
+	isAtomicRunning = true;							// only set after the current task has full control.
+	return ATOMIC_OK;
+}
+
+AtomicStatus AtomicStop(void){
+	if (!isAtomicRunning){
+		return ATOMIC_FLOW_ERROR;					// Verifies an Atomic Block is Active before ending. Returns with ATOMIC_FLOW_ERROR if an Atomic Block is not active.
 	}
 	isAtomicRunning = false;						// Changes State before opening process to task switching.
 	__set_BASEPRI(prevBasePri);
