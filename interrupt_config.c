@@ -62,4 +62,5 @@ AtomicStatus AtomicStop(void){
 	}
 	isAtomicRunning = false;						// Changes State before opening process to task switching.
 	__set_BASEPRI(prevBasePri);
+	return ATOMIC_OK;
 }
