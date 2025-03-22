@@ -7,16 +7,16 @@ static QueuePointers taskQueue;
 
 void SysTick_Handler(void){
     //TODO: make this highest priority
-    //      create task object with this function as data
+    //      create task object with this function as data?
     //      find syntax for interrupt calls to call pendSV correctly
     QueueObject *tempTask;
     tempTask = taskQueue.qHead; //creating dummy task and setting it equal to the head
     while (tempTask->next != NULL){
-        tempTask->data->lastRunTime = tempTask->data->lastRunTime +1;
+        tempTask->data->lastRunTime = tempTask->data->lastRunTime +1;//if the queue isn't empty, updates the last run time counter
         if (tempTask->data->lastRunTime >= 100){
             PendSV_Handler(); // calls pendSV to pull off the current task and check for old tasks needed to run. probably should be replaced with interrupt call
         }
-        tempTask = tempTask->next;//if the queue isn't empty, updates the last run time counter
+        tempTask = tempTask->next;//increments through queue//if the queue isn't empty, updates the last run time counter
     }
 }
 
