@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "interrupt_config.h"
 
 
 #ifndef TASK_H_ // This helps avoid typedef conflicts where TaskHandle is defined elsewhere in a non-opaque manner
