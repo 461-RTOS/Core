@@ -105,22 +105,6 @@ void OsKill(void){
     // This is a generic line comment to give more insight on specific lines
 }
 
-/********************************************************************************************
-*   Begins an atomic block (disables timer, and appropriate interrupts) for critical sections
-*   
-*********************************************************************************************/
-void AtomicStart(void){
-
-}
-
-/********************************************************************************************
-*   Ends an atomic block (re-enables timer, and appropriate interrupts)
-*   After critical sections are complete
-*********************************************************************************************/
-void AtomicStop(void){
-
-}
-
 
 /********************************************************************************************************
 SEMAPHORE FUNCTIONS
