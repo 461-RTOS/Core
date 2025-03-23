@@ -12,21 +12,40 @@
 .text
 .align 2
 PendSV_Handler:
-	mrs 	r0,		psp
-	isb                         		// stops pipeline
-	push 	{lr}                   		// pushes link register
-	bl 		getCurrentTask           	// branch links into RTOS function to get current task parameters
-	bl 		getSaveContextPtr        	// branch links into RTOS function to get save location and store to r0
-	cpsid	i							// Disable interrupts to protect stack pointer
-	stmdb 	r0!, 	{r4-r12, r14} 		// saves all usable registers to memory location
-	str 	sp, 	[r0], 	#4			// stack pointer needs to be saved seperately because stmdb is stupid.
-	cpsie	i							// Re-enable interrupts, stack pointer secure
-	bl 		selectNextTask           	// branch link to RTOS function that selects next task to run
-	bl 		getLoadContextPtr        	// branch lin to RTOS function to get address to new task and store to r0
-	cpsid	i							// Disable interrupts to protect stack pointer
-	ldmia 	r0!, 	{r4-r12, r14}  		// places register context from memory location onto usable registers
-	mov		r1, 	sp
-	ldr		r1,		[r0],	#4			// stack pointer needs to be loaded seperately because ldmia is stupid.	// This instruction also warns about interrupts causing problems. Has been addressed
-	cpsie	i							// Re-enable interrupts, stack pointer secure
-	pop {lr}                    		// pops link register
+
+	sub		sp,		#0x4				// decrement for alignment during call
+	push 	{lr}                   		// pushes link register, needed for proper return
+	bl  	getCurrentTask           	// branch links into RTOS function to get current task handle
+	bl  	getSaveContextPtr        	// branch links into RTOS function, passing task handle to get pointer to save buffer (stored in r0)
+	pop		{lr}						// restore link register
+	add		sp,		#0x4				// restore previous alignment
+
+	mrs 	r3,		psp					// store process stack pointer in r3 to be saved
+	stmdb 	r0!, 	{r3-r11} 			// saves all usable registers to context buffer of TCB for task
+
+	cpsid	i							// Disable interrupts to protect stack pointer integrity
+	mrs		r1,		MSP					// Stack pointer saved during atomic block to avoid mangling during a possible interrupt call (undefined behavior)
+	cpsie	i							// Re-enable interrupts, stack-pointer-critical section done
+
+
+	ldmia	r1!,	{r2-r9}				// Pull context saved on stack, move to buffer
+	stmdb	r0!,	{r2-r9}
+
+
+	push	{r1}						// save modified stack pointer, will be needed to load new context
+	push	{lr}
+	bl  	selectNextTask           	// branch link to RTOS function that selects next task to run
+	bl  	getLoadContextPtr        	// branch lin to RTOS function to get address to new task and store to r0
+	pop 	{lr}                    	// pops link register
+	pop		{r1}
+
+	ldmia 	r0!, 	{r3-r11}  			// places new register context from new task buffer location onto usable registers
+	msr		psp,	r3
+
+	ldmia	r0!,	{r2-r9}				// pulls remaining context from buffer to be placed on stack exception frame
+	stmdb	r1!,	{r2-r9}				// stores on stack exception frame, r1 should now match main stack pointer again
+
+
+	dsb									// ensures all memory operations have completed before continuing
+	isb									// flushes pipeline before switching contexts
 	bx lr								// branch exchange to link register (return)
