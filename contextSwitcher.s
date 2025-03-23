@@ -25,7 +25,8 @@ PendSV_Handler:
 	bl 		getLoadContextPtr        	// branch lin to RTOS function to get address to new task and store to r0
 	cpsid	i							// Disable interrupts to protect stack pointer
 	ldmia 	r0!, 	{r4-r12, r14}  		// places register context from memory location onto usable registers
-	ldr		sp,		[r0],	#4			// stack pointer needs to be loaded seperately because ldmia is stupid.	// This instruction also warns about interrupts causing problems. Has been addressed
+	mov		r1, 	sp
+	ldr		r1,		[r0],	#4			// stack pointer needs to be loaded seperately because ldmia is stupid.	// This instruction also warns about interrupts causing problems. Has been addressed
 	cpsie	i							// Re-enable interrupts, stack pointer secure
 	pop {lr}                    		// pops link register
 	bx lr								// branch exchange to link register (return)
