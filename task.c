@@ -28,12 +28,12 @@ void setCurrentTask(TaskHandle task){
     TCB.currentTask = task;
 }
 
-void * getSaveContextPtr(TaskHandle task){
-    return task->contextPtr;
+void * getSaveContextPtr(TaskHandle task){		// used when saving context to buffer (Points to end of buffer so stmdb can decrement backwards to the beginning of buffer when saving)
+    return (void*) &task->User_Properties;
 }
 
-void * getLoadContextPtr(TaskHandle task){
-    return task->contextBuffer;
+void * getLoadContextPtr(TaskHandle task){		// used when loading context from buffer (points to beginning of buffer so ldmia can increment toward the end of buffer when loading)
+    return (void*) &task->contextBuffer;
 }
 
 bool appendTasktoTCB(TaskHandle task){

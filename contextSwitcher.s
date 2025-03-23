@@ -39,11 +39,11 @@ PendSV_Handler:
 	pop 	{lr}
 	pop		{r1}						// restore modified stack pointer for stack exception framer
 
-	ldmia 	r0!, 	{r3-r11}  			// places new register context from new task buffer location onto usable registers
-	msr		psp,	r3
-
-	ldmia	r0!,	{r2-r9}				// pulls remaining context from buffer to be placed on stack exception frame
+	ldmia	r0!,	{r2-r9}				// pulls context from buffer to be placed on stack exception frame
 	stmdb	r1!,	{r2-r9}				// stores on stack exception frame, r1 should now match main stack pointer again
+
+	ldmia 	r0!, 	{r3-r11}  			// places new register context from new task buffer location onto usable registers
+	msr		psp,	r3					// new stack pointer in-place
 
 
 	dsb									// ensures all memory operations have completed before continuing
