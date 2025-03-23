@@ -36,7 +36,7 @@ void * getLoadContextPtr(TaskHandle task){		// used when loading context from bu
     return (void*) &task->contextBuffer;
 }
 
-bool appendTasktoTCB(TaskHandle task){
+bool appendTasktoTCB(TaskHandle task){			// adds completed task initialization to TCB. returns true on successful addition
     TaskHandle * newTaskList = realloc(TCB.tasks, sizeof(TaskHandle) * (TCB.taskCount + 1));
     if (newTaskList == NULL){
         return false;

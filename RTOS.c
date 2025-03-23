@@ -11,20 +11,29 @@
 *   both void * args and  void* retVal can be set to NULL if not used                       *
 *********************************************************************************************/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties){
-    TaskHandle handle = malloc(sizeof(TaskContext));
+    if (task == NULL){
+    	return NULL;	// Don't even bother if you won't hand me a real task!
+    }
+	TaskHandle handle = malloc(sizeof(TaskContext));
     char * stack; // cast to char for pointer arithmetic
     if (handle == NULL)
         return NULL;        // Allocation failed returns NULL
     handle->User_Properties = properties;
-    stack = malloc((stackSize * 4) + 64);           // Allocates [stackSize] 32-bit (4 byte) words for stack space, plus some buffers for internal logic. 
+    stack = malloc((stackSize * 4) + 4);           // Allocates [stackSize] 32-bit (4 byte) words for stack space
     if (stack == NULL){
         free(handle);
         return NULL;                                // Returns NULL after freeing handle, if stack allocation fails.
     }
-    handle->stackTail = stack;
-    // TODO: Perform pointer arithmetic on allocated stack to store return address, and args value (for R0/arg1)
-    // TODO: Add stack pointer to context buffer (at appropriate offset to be restored to the SP register)
-    // TODO: Add Link Register value to be popped from task as return value if task is designed to run a return routine
+    handle->stackTail = stack;						// stack tail saved for cleanup (needs to be freed when task is removed)
+    handle->retval = retVal;						// sets location to store return value
+    // these values need to be initialized so when a context switch occurs, these values start the task properly for the first time.
+    handle->contextBuffer.r0 = (uint32_t) args;			// Store args as parameter 1 in r0
+    handle->contextBuffer.PC = (uint32_t) task;			// Store beginning of function address as PC value to start executing at
+    handle->contextBuffer.LR = (uint32_t) returnRoutine;// Return Routine stored in Link Register so if function terminates, it enters a routine designed to clean up the task
+    handle->contextBuffer.sp = (uint32_t) stack;		// tail of stack is set to stack pointer
+    handle->contextBuffer.sp += (stackSize * 4) + 4;	// stack pointer is incremented to the head
+    handle->contextBuffer.sp &= ~((uint32_t) 0x7);		// lower 3 bits are cleared for 8 byte alignment of stack
+
     if (appendTasktoTCB(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
         return handle;                              // returns handle only after verifying task handle has been added to TCB
     }

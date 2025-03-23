@@ -37,7 +37,7 @@ void * getSaveContextPtr(TaskHandle task); // used when saving context to buffer
 
 void * getLoadContextPtr(TaskHandle task); // used when loading context from buffer (points to beginning of buffer so ldmia can increment toward the end of buffer when loading)
 
-bool appendTasktoTCB(TaskHandle task);
+bool appendTasktoTCB(TaskHandle task);     // adds completed task initialization to TCB. returns true on successful addition
 
 
 
