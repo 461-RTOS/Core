@@ -28,16 +28,16 @@ PendSV_Handler:
 	cpsie	i							// Re-enable interrupts, stack-pointer-critical section done
 
 
-	ldmia	r1!,	{r2-r9}				// Pull context saved on stack, move to buffer
+	ldmia	r1!,	{r2-r9}				// Pull context saved on stack (stack exception frame), move to buffer
 	stmdb	r0!,	{r2-r9}
 
 
-	push	{r1}						// save modified stack pointer, will be needed to load new context
+	push	{r1}						// save modified stack pointer for stack exception frame, will be needed to load new context
 	push	{lr}
-	bl  	selectNextTask           	// branch link to RTOS function that selects next task to run
-	bl  	getLoadContextPtr        	// branch lin to RTOS function to get address to new task and store to r0
-	pop 	{lr}                    	// pops link register
-	pop		{r1}
+	bl  	selectNextTask           	// branch link to RTOS function that selects handle for next task
+	bl  	getLoadContextPtr        	// branch lin to RTOS function to get address to buffer where new context is stored
+	pop 	{lr}
+	pop		{r1}						// restore modified stack pointer for stack exception framer
 
 	ldmia 	r0!, 	{r3-r11}  			// places new register context from new task buffer location onto usable registers
 	msr		psp,	r3
@@ -48,4 +48,4 @@ PendSV_Handler:
 
 	dsb									// ensures all memory operations have completed before continuing
 	isb									// flushes pipeline before switching contexts
-	bx lr								// branch exchange to link register (return)
+	bx lr								// branch exchange to link register (return) Stack exception frame will be restored to registers, and new context can execute
