@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+typedef struct TaskContext TaskContext;
+typedef TaskContext* TaskHandle;
 #include "RTOS.h"
 #include "queue.h"
 
 typedef struct TaskContext{                                 // A pointer to this struct can be used as a task handle, for user opacity, this is typedefed sas a void pointer to typedef void* TaskHandle;
-    uint8_t contextBuffer[40];                              // This identifier is used to restore context registers by the LDMIA instruction
+    uint8_t contextBuffer[44];                              // This identifier is used to restore context registers by the LDMIA instruction
     union{
         uint8_t contextPtr[sizeof(TaskProperties)];         // This value should never be assigned directly to, this is just a pointer to be used by STMDB instruction in order to write to the context buffer when saving context
         TaskProperties User_Properties;
@@ -16,8 +18,6 @@ typedef struct TaskContext{                                 // A pointer to this
     void ** retval;                                         // Allows a return value pointer to be stored at a location pointed to by retVal.
     void * stackTail;                                       // Hold stack tail to free from when deleting a task
 }TaskContext;
-
-typedef TaskContext* TaskHandle;
 
 // The Task control block will be used to locate currently active tasks, as well as choose which task to run when context switching
 typedef struct TaskControlBlock{
@@ -38,6 +38,7 @@ void * getSaveContextPtr(TaskHandle task);
 void * getLoadContextPtr(TaskHandle task);
 
 bool appendTasktoTCB(TaskHandle task);
+
 
 
 

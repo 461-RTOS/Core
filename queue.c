@@ -1,14 +1,14 @@
 #include <stdlib.h>
+#include "task.h"
 #include "RTOS.h"
 #include "queue.h"
-#include "task.h"
 
 static QueuePointers Queue;
 
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
 TaskHandle QueuePop(){
     TaskHandle data = Queue.qHead->data;
-    QueuePointers *newHead = Queue.qHead->next;
+    QueueObject *newHead = Queue.qHead->next;
     Queue.qHead = newHead;
     return data;
 };

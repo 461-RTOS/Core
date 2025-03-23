@@ -1,6 +1,7 @@
 #ifndef RTOS_H_
 #define RTOS_H_
-
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "interrupt_config.h"
@@ -51,12 +52,12 @@ typedef void * (*Task)(void *);
 *   both void * args and  void* retVal can be set to NULL if not used                       *
 *********************************************************************************************/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties);
-    
+
 
 
 /********************************************************************************
 *   Updates task handle with new properties
-*   
+*
 *********************************************************************************/
 void ChangeTaskProperties(TaskHandle handle, TaskProperties properties);
 
@@ -64,7 +65,7 @@ void ChangeTaskProperties(TaskHandle handle, TaskProperties properties);
 
 /********************************************************************************
 *   Suspends task if active, unsuspends task if suspended
-*   
+*
 *********************************************************************************/
 void ToggleTaskSuspend(TaskHandle handle);
 
@@ -72,7 +73,7 @@ void ToggleTaskSuspend(TaskHandle handle);
 
 /********************************************************************************
 *   Returns the suspend state of a task
-*   
+*
 *********************************************************************************/
 bool IsTaskSuspended(TaskHandle handle);
 

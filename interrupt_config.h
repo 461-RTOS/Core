@@ -34,6 +34,8 @@ void SysTick_Init(uint32_t ticksPerSec);
 void SysTick_Restore(void);
 
 void PendSV_Init(void);
+
+void setPendSV(void);
 #endif
 
 #endif

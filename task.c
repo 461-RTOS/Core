@@ -11,9 +11,10 @@ TaskHandle selectNextTask(void){
     QueueObject *tempTask;
     tempTask = TCB.taskQueue.qHead; //creating temptask to check queue for valid tasks starting from head
    while (tempTask->next != NULL){
-        if (tempTask->data->lastRunTime < TCB.currentTask->lastRunTime)
-            TCB.currentTask=tempTask;//set up new task as the current task
-            return tempTask;
+        if (tempTask->data->lastRunTime < TCB.currentTask->lastRunTime){
+            TCB.currentTask=tempTask->data;//set up new task as the current task
+            return tempTask->data;
+        }
         tempTask = tempTask->next;//increment to next task in queue
    };
     return NULL;                    // Returning NULL if no task is Selected
@@ -38,7 +39,6 @@ void * getLoadContextPtr(TaskHandle task){
 bool appendTasktoTCB(TaskHandle task){
     TaskHandle * newTaskList = realloc(TCB.tasks, sizeof(TaskHandle) * (TCB.taskCount + 1));
     if (newTaskList == NULL){
-        TCB.taskCount;
         return false;
     }
     TCB.tasks = newTaskList;

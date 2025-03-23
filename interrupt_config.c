@@ -1,5 +1,4 @@
-#include "core_cm4.h"
-#include "stm32l4xx_hal.h"
+#include "main.h"
 #include "interrupt_config.h"
 
 
@@ -7,7 +6,8 @@
 static SysTick_Type previousSystickContext;
 
 void SysTick_Init(uint32_t ticksPerSec){
-	previousSystickContext = *SysTick;				// Saves context for later when uninitializing system.
+	previousSystickContext.LOAD = SysTick->LOAD;	// Saves context for later when uninitializing system.
+	previousSystickContext.VAL = SysTick->VAL;
 	uint32_t reloadVal = (SystemCoreClock / ticksPerSec) - 1;
 	SysTick->LOAD = reloadVal;						// Sets how often SysTick is reloaded
 	NVIC_SetPriority(SysTick_IRQn, 0xFE);			// Sets SysTick to a low priority interrupt (but still higher than PendSV)
@@ -19,8 +19,9 @@ void SysTick_Init(uint32_t ticksPerSec){
 }
 
 void SysTick_Restore(void){
-	Systick->CTRL = 0; 								// Disable Control before writing old context
-	*SysTick = previousSystickContext;
+	SysTick->CTRL = 0; 								// Disable Control before writing old context
+	SysTick->LOAD = previousSystickContext.LOAD;
+	SysTick->VAL = previousSystickContext.VAL;
 }
 
 
@@ -36,6 +37,10 @@ void PendSV_Init(void)
     NVIC_SetPriority(PendSV_IRQn, 0xFF);
 
     // 4. Leave BASEPRI raised until you're ready to start the scheduler
+}
+
+void setPendSV(void){	// Sets pendSV to pending, will call the interrupt for the pendSV handler as soon as it isn't being blocked by higher priority interrupts.
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 
 

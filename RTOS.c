@@ -1,5 +1,5 @@
-#include "task.h"
 #include "semaphore.h"
+#include "task.h"
 #include <stdlib.h>
 #include "RTOS.h" // RTOS.h must be included LAST in order to avoid definition conflicts for opaque types (such as TaskHandle and SemaphoreHandle)
 

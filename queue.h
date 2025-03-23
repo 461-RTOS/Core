@@ -19,6 +19,6 @@ typedef struct QueuePointers{
 
 TaskHandle QueuePop(void);
 
-void QueuePush(TaskHandle);
+void QueuePush(TaskHandle task);
 
 #endif
