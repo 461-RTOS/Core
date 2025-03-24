@@ -25,6 +25,7 @@ typedef struct TaskContext{                                 // A pointer to this
 typedef struct TaskControlBlock{
     uint32_t taskCount;             // Number of tasks in array
     TaskHandle currentTask;         // Currently Active Task
+    TaskHandle nextTask;
     TaskHandle * tasks;             // This is an array of pointers to tasks. We can avoid linked-list structuring, while mantaining Handle IDs if we mantain each handle's pointer, by managing an array to the pointers, rather than changing where the data itself is.
     QueuePointers taskQueue;
 }TaskControlBlock;
