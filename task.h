@@ -29,6 +29,8 @@ typedef struct TaskControlBlock{
     QueuePointers taskQueue;
 }TaskControlBlock;
 
+extern TaskControlBlock * TCB;
+
 TaskHandle selectNextTask(void);
 
 TaskHandle getCurrentTask(void);

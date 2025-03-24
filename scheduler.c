@@ -15,6 +15,8 @@ void SysTick_Handler(void){
         tempTask->data->lastRunTime = tempTask->data->lastRunTime +1;//if the queue isn't empty, updates the last run time counter
         if (tempTask->data->lastRunTime >= 100){
             setPendSV(); // sets pendSV to "pending", will be called as soon as no higher priority interrupts are active.
+            TCB->nextTask = tempTask->data;
+            return;
         }
         tempTask = tempTask->next;//increments through queue//if the queue isn't empty, updates the last run time counter
     }

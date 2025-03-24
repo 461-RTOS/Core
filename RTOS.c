@@ -86,8 +86,12 @@ void DeleteTask(TaskHandle handle){
 /********************************************************************************
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
-void OsInitialize(int timer){
-    // This is a generic line comment to give more insight on specific lines
+OS_Status OsInitialize(uint32_t time_slices){
+    TCB = calloc(1, sizeof(TaskControlBlock));
+    if (TCB == NULL){
+    	return osErrorResource;
+    }
+    return osOK;
 }
 
 /********************************************************************************
