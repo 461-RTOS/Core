@@ -10,10 +10,17 @@ void * QueuePop(void){
 	if (Queue.qHead == NULL)
 		return NULL;
     void * data = Queue.qHead->data;
-    QueueObject * oldHead = Queue.qHead;
-    QueueObject *newHead = Queue.qHead->next;
-    Queue.qHead = newHead;
-    free(oldHead);
+    if (Queue.qHead == Queue.qTail){
+    	free(Queue.qHead);
+    	Queue.qHead = NULL;
+    	Queue.qTail = NULL;
+    }
+    else{
+		QueueObject * oldHead = Queue.qHead;
+		QueueObject *newHead = Queue.qHead->next;
+		Queue.qHead = newHead;
+		free(oldHead);
+    }
     return data;
 };
 
