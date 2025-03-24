@@ -28,13 +28,13 @@ typedef struct TaskProperties{
 
 // OS Status enum for signal definitions
 
-enum OS_Status{
+typedef enum OS_Status{
     osOK = 0,                       // Complete without issues
     osErrorTimeout,                 // Error: Timeout occurs before completion
     osErrorResource,                // Error: Resource currently unavailable
     osErrorParameter,               // Error: Bad Parameter passed (such as NULL)
     osErrorISR                      // Error: called from an ISR without timeout == 0
-};
+}OS_Status;
 
 typedef enum OS_Status OS_Status;
 
@@ -90,7 +90,7 @@ void DeleteTask(TaskHandle handle);
 /********************************************************************************************
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************************/
-void OsInitialize(int timer);
+OS_Status OsInitialize(uint32_t time_slices);
 
 
 
