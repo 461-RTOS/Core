@@ -8,7 +8,7 @@
 typedef struct QueueObject QueueObject; 
 
 struct QueueObject{ //struct for queue items. contains task data values and a point to the next object in the queue
-    TaskHandle data;
+    void * data;
     QueueObject * next;
 };
 
@@ -17,8 +17,8 @@ typedef struct QueuePointers{ //struct that should be used when managing queue. 
     QueueObject *qTail;
 }QueuePointers;
 
-TaskHandle QueuePop(void);
+void * QueuePop(void);
 
-void QueuePush(TaskHandle task);
+void QueuePush(void * data);
 
 #endif

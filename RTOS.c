@@ -2,7 +2,7 @@
 #include "task.h"
 #include <stdlib.h>
 #include "RTOS.h" // RTOS.h must be included LAST in order to avoid definition conflicts for opaque types (such as TaskHandle and SemaphoreHandle)
-
+#include "interrupt_config.h"
 /********************************************************************************************
 *   Returning a task handle, The StartTask() function takes the function pointer            *
 *   to a task as a parameter, as well as the stack size (in 32-bit words),                  *
@@ -10,6 +10,9 @@
 *   a pointer to a void pointer to store return values, as well as a TaskProperties object  *
 *   both void * args and  void* retVal can be set to NULL if not used                       *
 *********************************************************************************************/
+void returnRoutine(void * retVal);
+
+
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties){
     if (task == NULL){
     	return NULL;	// Don't even bother if you won't hand me a real task!
@@ -86,8 +89,12 @@ void DeleteTask(TaskHandle handle){
 /********************************************************************************
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
-void OsInitialize(int timer){
-    // This is a generic line comment to give more insight on specific lines
+OS_Status OsInitialize(uint32_t time_slices){
+    TCB = calloc(1, sizeof(TaskControlBlock));
+    if (TCB == NULL){
+    	return osErrorResource;
+    }
+    return osOK;
 }
 
 /********************************************************************************
@@ -95,7 +102,7 @@ void OsInitialize(int timer){
 *   is supposed to do.
 *********************************************************************************/
 void OsStart(void){
-    // This is a generic line comment to give more insight on specific lines
+
 }
 
 /********************************************************************************
