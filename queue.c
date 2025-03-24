@@ -6,22 +6,30 @@
 static QueuePointers Queue;
 
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
-TaskHandle QueuePop(){
-    TaskHandle data = Queue.qHead->data;
+void * QueuePop(void){
+	if (Queue.qHead == NULL)
+		return NULL;
+    void * data = Queue.qHead->data;
+    QueueObject * oldHead = Queue.qHead;
     QueueObject *newHead = Queue.qHead->next;
     Queue.qHead = newHead;
+    free(oldHead);
     return data;
 };
 
 /*creates new QueueObjects from given tasks then pushes onto queue from tail*/
-void QueuePush(TaskHandle task){
-    QueueObject* nextTask = malloc(sizeof(QueueObject));
-    if(!nextTask){
+void QueuePush(void * data){
+    QueueObject* nextNode = malloc(sizeof(QueueObject));
+    if(!nextNode){
         return;
     }
-    nextTask->data = task;
-    nextTask->next = NULL;
+    nextNode->data = data;
+    nextNode->next = NULL;
     //this is simple enough for now but needs to be updated with new scheduling logic
-    Queue.qTail->next = nextTask;       // adds task to tail of queue
-    Queue.qTail = nextTask;             // moves tail to next task
+    if (Queue.qTail == NULL){
+    	Queue.qTail = nextNode;
+    	Queue.qHead = nextNode;
+    	return;
+    }
+    Queue.qTail= Queue.qTail->next = nextNode;       // adds task to tail of queue
 }
