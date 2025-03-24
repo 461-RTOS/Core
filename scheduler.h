@@ -6,9 +6,9 @@
 
 void SysTick_Handler(void);
 
-void PendSV_Handler(void);
+//void PendSV_Handler(void);
 
-void switchHandler(void);
+v//oid switchHandler(void);
 
 
 #endif
