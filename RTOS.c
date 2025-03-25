@@ -33,8 +33,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     handle->contextBuffer.r0 = (uint32_t) args;			// Store args as parameter 1 in r0
     handle->contextBuffer.PC = (uint32_t) task;			// Store beginning of function address as PC value to start executing at
     handle->contextBuffer.LR = (uint32_t) returnRoutine;// Return Routine stored in Link Register so if function terminates, it enters a routine designed to clean up the task
-    handle->contextBuffer.sp = (uint32_t) stack;		// tail of stack is set to stack pointer
-    handle->contextBuffer.sp += (stackSize * 4) + 4;	// stack pointer is incremented to the head
+    handle->contextBuffer.sp = (uint32_t) stack + (stackSize * 4) + 4;		// tail of stack is set to stack pointer; stack pointer is incremented to the head
     handle->contextBuffer.sp &= ~((uint32_t) 0x7);		// lower 3 bits are cleared for 8 byte alignment of stack
 
     if (appendTasktoTCB(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
