@@ -9,6 +9,7 @@ typedef struct QueueObject QueueObject;
 
 struct QueueObject{ //struct for queue items. contains task data values and a point to the next object in the queue
     void * data;
+    QueueObject * prev;
     QueueObject * next;
 };
 

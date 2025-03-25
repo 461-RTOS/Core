@@ -5,6 +5,33 @@
 
 static QueuePointers Queue;
 
+void taskQueueInit(TaskHandle task){
+    //QueueObject taskObject;
+    //taskObject.data = task;
+    //QueueObject *head = Queue.qHead;
+    if (Queue.qHead == NULL){
+        QueuePush(task);
+    }
+    else if (((TaskHandle)(Queue.qHead->data))->User_Properties.priority <= task->User_Properties.priority){
+        QueueObject* taskPointer=malloc(sizeof(QueueObject));
+        if(!taskPointer){
+            return;
+        }
+        taskPointer->data = task;
+        taskPointer->next = NULL;
+        taskPointer->prev = Queue.qHead;
+    }
+    else if (((TaskHandle)(Queue.qHead->data))->User_Properties.priority > task->User_Properties.priority){
+        QueueObject* taskPointer=malloc(sizeof(QueueObject));
+        if (!taskPointer){
+            return;
+        }
+        taskPointer->data = task;
+        taskPointer->next = Queue.qHead;
+        taskPointer->prev = NULL;
+    }
+}
+
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
 void * QueuePop(void){
 	if (Queue.qHead == NULL)
