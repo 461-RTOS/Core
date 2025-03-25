@@ -59,6 +59,8 @@ void QueuePush(void * data){
     }
     nextNode->data = data;
     nextNode->next = NULL;
+    nextNode->prev = Queue.qTail; //might need a NULL check here.
+    Queue.qTail = nextNode;
     //this is simple enough for now but needs to be updated with new scheduling logic
     if (Queue.qTail == NULL){
     	Queue.qTail = nextNode;
