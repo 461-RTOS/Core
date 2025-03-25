@@ -12,7 +12,7 @@ void taskQueueInit(TaskHandle task){
     if (Queue.qHead == NULL){
         QueuePush(task);
     }
-    else if (Queue.qHead->data->User_Properties.priority <= task->User_Properties.priority){
+    else if (((TaskHandle)(Queue.qHead->data))->User_Properties.priority <= task->User_Properties.priority){
         Queue.qHead->next = taskObject;
         taskObject.prev = Queue.qHead;
     }
