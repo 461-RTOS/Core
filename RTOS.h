@@ -33,7 +33,9 @@ typedef enum OS_Status{
     osErrorTimeout,                 // Error: Timeout occurs before completion
     osErrorResource,                // Error: Resource currently unavailable
     osErrorParameter,               // Error: Bad Parameter passed (such as NULL)
-    osErrorISR                      // Error: called from an ISR without timeout == 0
+    osErrorISR,                     // Error: called from an ISR without timeout == 0
+	osErrorUninitialized,			// Error: RTOS Kernel is not currently initialized
+	osErrorAllocationFailure		// Error: failure to allocate resource memory
 }OS_Status;
 
 typedef enum OS_Status OS_Status;
@@ -49,7 +51,8 @@ typedef void * (*Task)(void *);
 *   to a task as a parameter, as well as the stack size (in 32-bit words),                  *
 *   a void pointer for any arguments that the task function may need                        *
 *   a pointer to a void pointer to store return values, as well as a TaskProperties object  *
-*   both void * args and  void* retVal can be set to NULL if not used                       *
+*   both void * args and  void* retVal can be set to NULL if not used						*
+*   RTOS Kernel must be initialized before any tasks can be added							*
 *********************************************************************************************/
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties);
 
@@ -80,15 +83,14 @@ bool IsTaskSuspended(TaskHandle handle);
 
 
 /********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*   Removes a task from system, switches to another task if currently running
 *********************************************************************************************/
 void DeleteTask(TaskHandle handle);
 
 
 
 /********************************************************************************************
-*   Will recieve timer, just using int as placeholder
+*   Initializes the kernel,
 *********************************************************************************************/
 OS_Status OsInitialize(uint32_t time_slices);
 
@@ -98,7 +100,7 @@ OS_Status OsInitialize(uint32_t time_slices);
 *   This is a generic comment block that will tell us what the following function
 *   is supposed to do.
 *********************************************************************************************/
-void OsStart(void);
+OS_Status OsStart(void);
 
 
 

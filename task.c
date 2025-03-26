@@ -31,7 +31,10 @@ void * getLoadContextPtr(TaskHandle task){		// used when loading context from bu
 }
 
 bool appendTasktoKernel(TaskHandle task){			// adds completed task initialization to Kernel. returns true on successful addition
-    TaskHandle * newTaskList = realloc(kernel->tasks, sizeof(TaskHandle) * (kernel->taskCount + 1));
+    if (kernel == NULL){
+    	return false;
+    }
+	TaskHandle * newTaskList = realloc(kernel->tasks, sizeof(TaskHandle) * (kernel->taskCount + 1));
     if (newTaskList == NULL){
         return false;
     }

@@ -9,10 +9,11 @@
 *   to a task as a parameter, as well as the stack size (in 32-bit words),                  *
 *   a void pointer for any arguments that the task function may need                        *
 *   a pointer to a void pointer to store return values, as well as a TaskProperties object  *
-*   both void * args and  void* retVal can be set to NULL if not used                       *
+*   both void * args and  void* retVal can be set to NULL if not used						*
+*   RTOS Kernel must be initialized before any tasks can be added							*
 *********************************************************************************************/
 void returnRoutine(void * retVal);
-
+void * idleProcInitializer(void * args);
 
 TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, TaskProperties properties){
     if (task == NULL){
@@ -98,12 +99,23 @@ OS_Status OsInitialize(uint32_t time_slices){
     return osOK;
 }
 
+void SwitchFromMain(void);
 /********************************************************************************
 *   This is a generic comment block that will tell us what the following function
 *   is supposed to do.
 *********************************************************************************/
-void OsStart(void){
-
+OS_Status OsStart(void){
+	if (kernel == NULL){
+		return osErrorUninitialized;
+	}
+	TaskProperties properties = {0xFF, 0x00, false};
+	TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);
+	if (idleTask == NULL){
+		return	osErrorAllocationFailure;
+	}
+	kernel->idleTask = idleTask;
+	SwitchFromMain();		// Hands control to the RTOS Kernel
+	return osOK;
 }
 
 /********************************************************************************
