@@ -70,14 +70,14 @@ SwitchFromMain:							// Used to shift context to idle task
 	sub 	sp, 	#0x4
 	push	{LR}
 	bl		getSaveMainContextPtr
-	stmdb	r0!,	{r4-r11}
+	stmdb	r0!,	{r4-r11}			// save r4 - r11 to main context save in kernel
 	bl		getSaveMainContextPtr2
 	pop		{LR}
 	add		sp,		#0x4
 
 	mrs		r1,		xPSR
 	mov		r3,		LR
-	mov		r4,		r12					// We don't care about preserving program counter here;
+	mov		r4,		r12
 	stmdb	r0!,	{r3-r4}
 	str		r1,		[r0, #-8]!			//	Previous context should be mostly saved by this point.
 										//TODO:	Work in progress, finish function
