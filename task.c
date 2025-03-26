@@ -56,3 +56,7 @@ void * getLoadMainContextPtr(void){		// Used when stopping kernel
 void * getLoadMainContextPtr2(void){
 	return &kernel->mainContext;
 }
+
+void * getIdleStackPointer(void){
+	return (void*) kernel->idleTask->contextBuffer.sp;
+}

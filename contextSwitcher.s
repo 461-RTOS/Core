@@ -9,6 +9,7 @@
 .type SwitchToMain %function
 
 
+
 .extern getCurrentTask
 .extern getSaveContextPtr
 .extern selectNextTask
@@ -17,6 +18,8 @@
 .extern getLoadMainContextPtr
 .extern getSaveMainContextPtr2
 .extern getLoadMainContextPtr2
+.extern getIdleStackPointer
+.extern idleProcInitializer
 
 .text
 .align 2
@@ -78,9 +81,17 @@ SwitchFromMain:							// Used to shift context to idle task
 	mrs		r1,		xPSR
 	mov		r3,		LR
 	mov		r4,		r12
-	stmdb	r0!,	{r3-r4}
+	stmdb	r0!,	{r3-r4}				// saves link register, program status register, and
 	str		r1,		[r0, #-8]!			//	Previous context should be mostly saved by this point.
 										//TODO:	Work in progress, finish function
+	bl getIdleStackPointer
+	msr		psp,	r0					// Store Idle task's stack pointer to PSP
+	mov		r0,		#0x2
+	msr		CONTROL, r0					// Switch to PSP
+
+	dsb
+	isb
+	B		idleProcInitializer			// Start Idle Process and task Scheduler
 
 
 .align 2
