@@ -12,7 +12,7 @@ QueuePointers taskQueueInit(TaskHandle* tasks){
     int taskCount = kernel->taskCount;
     for (int i=0; i==taskCount;i++){
         if (Queue.qHead == NULL){
-            QueuePush(tasks[i]);
+            queuePush(tasks[i]);
         }
         else{
             QueueObject* nextNode = malloc(sizeof(QueueObject));
@@ -26,8 +26,31 @@ QueuePointers taskQueueInit(TaskHandle* tasks){
     
 }
 
+bool isQueueEmpty(void){ //for user use, returns a bool to check if the queue is empty
+    if (Queue.qHead == NULL && Queue.qTail == NULL){
+        return true;
+    }
+    else{
+        return false; //if this is a false negative something has gone horriby wrong
+    }
+}
+
+int queueSize(void){ //for user use, returns an int of the number of queue items
+    QueueObject* iterative = Queue.qHead;
+    int size =0;
+    while (iterative != NULL){
+        size++;
+        iterative = iterative->next;
+    }
+    return size;
+}
+
+void * queuePeek(void){ //for user use, returns qHead
+    return Queue.qHead;
+}
+
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
-void * QueuePop(void){
+void * queuePop(void){
 	if (Queue.qHead == NULL)
 		return NULL;
     void * data = Queue.qHead->data;
@@ -46,7 +69,7 @@ void * QueuePop(void){
 };
 
 /*creates new QueueObjects from given tasks then pushes onto queue from tail*/
-void QueuePush(void * data){
+void queuePush(void * data){
     QueueObject* nextNode = malloc(sizeof(QueueObject));
     if(!nextNode){
         return;

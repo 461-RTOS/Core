@@ -18,8 +18,16 @@ typedef struct QueuePointers{ //struct that should be used when managing queue. 
     QueueObject *qTail;
 }QueuePointers;
 
-void * QueuePop(void);
+QueuePointers taskQueueInit(TaskHandle *);
 
-void QueuePush(void * data);
+bool isQueueEmpty(void);
+
+int queueSize(void);
+
+void * queuePeek(void);
+
+void * queuePop(void);
+
+void queuePush(void * data);
 
 #endif
