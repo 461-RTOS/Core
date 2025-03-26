@@ -18,7 +18,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     if (task == NULL){
     	return NULL;	// Don't even bother if you won't hand me a real task!
     }
-	TaskHandle handle = malloc(sizeof(TaskContext));
+	TaskHandle handle = malloc(sizeof(TaskControlBlock));
     char * stack; // cast to char for pointer arithmetic
     if (handle == NULL)
         return NULL;        // Allocation failed returns NULL
@@ -37,7 +37,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     handle->contextBuffer.sp = (uint32_t) stack + (stackSize * 4) + 4;		// tail of stack is set to stack pointer; stack pointer is incremented to the head
     handle->contextBuffer.sp &= ~((uint32_t) 0x7);		// lower 3 bits are cleared for 8 byte alignment of stack
 
-    if (appendTasktoTCB(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
+    if (appendTasktoKernel(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
         return handle;                              // returns handle only after verifying task handle has been added to TCB
     }
     free(handle);
@@ -90,8 +90,8 @@ void DeleteTask(TaskHandle handle){
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
 OS_Status OsInitialize(uint32_t time_slices){
-    TCB = calloc(1, sizeof(TaskControlBlock));
-    if (TCB == NULL){
+    kernel = calloc(1, sizeof(TaskControlBlock));
+    if (kernel == NULL){
     	return osErrorResource;
     }
     return osOK;

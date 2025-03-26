@@ -4,22 +4,22 @@
 #include "scheduler.h"
 
 
-TaskControlBlock * TCB = NULL;    // Empty, uninitialized Task Control Block
+Kernel * kernel = NULL;    // Empty, uninitialized Task Control Block
 
 
 TaskHandle selectNextTask(void){
-    TaskHandle nextTask = TCB->nextTask;
-    TCB->currentTask = nextTask;
-    TCB->nextTask = NULL;
+    TaskHandle nextTask = kernel->nextTask;
+    kernel->currentTask = nextTask;
+    kernel->nextTask = NULL;
     return nextTask;
 }
 
 TaskHandle getCurrentTask(void){
-    return TCB->currentTask;
+    return kernel->currentTask;
 }
 
 void setCurrentTask(TaskHandle task){
-    TCB->currentTask = task;
+    kernel->currentTask = task;
 }
 
 void * getSaveContextPtr(TaskHandle task){		// used when saving context to buffer (Points to end of buffer so stmdb can decrement backwards to the beginning of buffer when saving)
@@ -30,12 +30,12 @@ void * getLoadContextPtr(TaskHandle task){		// used when loading context from bu
     return (void*) &task->contextBuffer;
 }
 
-bool appendTasktoTCB(TaskHandle task){			// adds completed task initialization to TCB. returns true on successful addition
-    TaskHandle * newTaskList = realloc(TCB->tasks, sizeof(TaskHandle) * (TCB->taskCount + 1));
+bool appendTasktoKernel(TaskHandle task){			// adds completed task initialization to Kernel. returns true on successful addition
+    TaskHandle * newTaskList = realloc(kernel->tasks, sizeof(TaskHandle) * (kernel->taskCount + 1));
     if (newTaskList == NULL){
         return false;
     }
-    TCB->tasks = newTaskList;
-    TCB->tasks[TCB->taskCount++] = task;
+    kernel->tasks = newTaskList;
+    kernel->tasks[kernel->taskCount++] = task;
     return true;
 }
