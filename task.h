@@ -9,7 +9,7 @@ typedef TaskControlBlock* TaskHandle;
 #include "queue.h"
 
 typedef struct contextBuffer{ //buffer containing register values, labeled accordingly.
-	uint32_t  	xPSR, PC,   LR,   r12,  r3,   r2,   r1,    r0,   sp,
+	uint32_t  	r0,   r1,   r2,   r3,   r12,  LR,   PC,    xPSR,   sp,
 				r4,   r5,   r6,   r7,   r8,   r9,   r10,   r11;
 }contextBuffer;
 
