@@ -5,31 +5,25 @@
 
 static QueuePointers Queue;
 
-void taskQueueInit(TaskHandle task){
+QueuePointers taskQueueInit(TaskHandle* tasks){
     //QueueObject taskObject;
-    //taskObject.data = task;
+    //taskObject.data = tasks;
     //QueueObject *head = Queue.qHead;
-    if (Queue.qHead == NULL){
-        QueuePush(task);
-    }
-    else if (((TaskHandle)(Queue.qHead->data))->User_Properties.priority <= task->User_Properties.priority){
-        QueueObject* taskPointer=malloc(sizeof(QueueObject));
-        if(!taskPointer){
-            return;
+    int taskCount = kernel->taskCount;
+    for (int i=0; i==taskCount;i++){
+        if (Queue.qHead == NULL){
+            QueuePush(tasks[i]);
         }
-        taskPointer->data = task;
-        taskPointer->next = NULL;
-        taskPointer->prev = Queue.qHead;
-    }
-    else if (((TaskHandle)(Queue.qHead->data))->User_Properties.priority > task->User_Properties.priority){
-        QueueObject* taskPointer=malloc(sizeof(QueueObject));
-        if (!taskPointer){
-            return;
+        else{
+            QueueObject* nextNode = malloc(sizeof(QueueObject));
+            nextNode->data = tasks[i];
+            nextNode->next = NULL;
+            Queue.qTail->next = nextNode;
+            Queue.qTail = nextNode;
         }
-        taskPointer->data = task;
-        taskPointer->next = Queue.qHead;
-        taskPointer->prev = NULL;
+        i++;
     }
+    
 }
 
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
@@ -59,7 +53,7 @@ void QueuePush(void * data){
     }
     nextNode->data = data;
     nextNode->next = NULL;
-    nextNode->prev = Queue.qTail; //might need a NULL check here.
+    //nextNode->prev = Queue.qTail; //might need a NULL check here.
     Queue.qTail = nextNode;
     //this is simple enough for now but needs to be updated with new scheduling logic
     if (Queue.qTail == NULL){
