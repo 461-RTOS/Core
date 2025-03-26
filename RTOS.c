@@ -163,3 +163,17 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
     // TODO: Implement Semaphore Acquire Logic
     return osOK;
 }
+
+
+// weak idle process, can be overwritten with a custom one
+void __attribute__((weak)) idleProcess(void){
+	while(1);
+}
+
+// initializes idle process during kernel start
+void * idleProcInitializer(void * args){	// args and return values unused; just part of the function type tasks use
+	idleProcess();
+	return NULL;
+}
+
+
