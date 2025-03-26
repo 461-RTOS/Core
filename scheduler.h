@@ -4,11 +4,11 @@
 #include "task.h"
 #include "queue.h"
 
+extern bool isKernelActive;
+
 void SysTick_Handler(void);
 
-//void PendSV_Handler(void);
 
-//void switchHandler(void);
 
 
 #endif

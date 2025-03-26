@@ -6,9 +6,14 @@
 
 static QueuePointers taskQueue;
 
+bool isKernelActive = false; // must be manually set before SysTick Handler tries to schedule tasks.
+
 void SysTick_Handler(void){
     //      create task object with this function as data?
     HAL_IncTick();  // SysTick Handler should include this line for HAL functions that rely on SysTick
+    if (!isKernelActive){
+    	return;				// If kernel is not set to active, Task Scheduler doesn't need to run
+    }
     QueueObject *tempTask;
     tempTask = taskQueue.qHead; //creating dummy task and setting it equal to the head
     while (tempTask->next != NULL){
