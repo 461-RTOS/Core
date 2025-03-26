@@ -160,7 +160,7 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
 }
 
 OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
-    TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
+    //TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
     if (!handle)
         return osErrorParameter;                            // if bad semaphore is passed, return with error code
     if (!handle->semaphoreState){                           // if semaphore is free, check for other tasks already on queue, and execute if none available

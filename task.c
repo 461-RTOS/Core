@@ -48,17 +48,10 @@ void * getSaveMainContextPtr(void){		// Used when starting kernel
 	return &kernel->buffer;
 }
 
-void * getSaveMainContextPtr2(void){
-	return &kernel->mainContext.r3;
-}
-
 void * getLoadMainContextPtr(void){		// Used when stopping kernel
 	return &kernel->mainContext;
 }
 
-void * getLoadMainContextPtr2(void){
-	return &kernel->mainContext;
-}
 
 void * getIdleStackPointer(void){
 	return (void*) kernel->idleTask->contextBuffer.sp;
