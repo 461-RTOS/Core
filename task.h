@@ -29,7 +29,10 @@ typedef struct Kernel{
     TaskHandle currentTask;         // Currently Active Task
     TaskHandle nextTask;
     TaskHandle * tasks;             // This is an array of pointers to tasks. We can avoid linked-list structuring, while mantaining Handle IDs if we mantain each handle's pointer, by managing an array to the pointers, rather than changing where the data itself is.
+    TaskHandle idleTask;
     QueuePointers taskQueue;
+    contextBuffer mainContext;		// main program context can be saved here until kernel is stopped
+    void * mainPC;					// main program counter might need to be preserved when kernel is started.
 }Kernel;
 
 extern Kernel * kernel;

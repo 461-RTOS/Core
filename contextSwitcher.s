@@ -8,6 +8,8 @@
 .extern getSaveContextPtr
 .extern selectNextTask
 .extern getLoadContextPt
+.extern getSaveMainContextPtr
+.extern getLoadMainContextPtr
 
 .text
 .align 2
@@ -49,3 +51,26 @@ PendSV_Handler:
 	dsb									// ensures all memory operations have completed before continuing
 	isb									// flushes pipeline before switching contexts
 	bx lr								// branch exchange to link register (return) Stack exception frame will be restored to registers, and new context can execute
+
+
+
+
+
+
+.align 2
+SwitchFromMain:							// Used to shift context to idle task
+
+	sub 	sp, 	#0x4
+	push	{LR}
+	bl		getSaveMainContextPtr
+	stmdb	r0!,	{r4-r11}
+	mrs		r1,		xPSR
+
+
+
+
+
+.align 2
+SwitchToMain:
+
+

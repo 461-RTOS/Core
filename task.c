@@ -39,3 +39,20 @@ bool appendTasktoKernel(TaskHandle task){			// adds completed task initializatio
     kernel->tasks[kernel->taskCount++] = task;
     return true;
 }
+
+
+void * getSaveMainContextPtr(void){		// Used when starting kernel
+	return &kernel->mainPC;
+}
+
+void * getSaveMainContextPtr2(void){
+	return &kernel->mainContext.r3;
+}
+
+void * getLoadMainContextPtr(void){		// Used when stopping kernel
+	return &kernel->mainContext;
+}
+
+void * getLoadMainContextPtr2(void){
+	return &kernel->mainContext;
+}
