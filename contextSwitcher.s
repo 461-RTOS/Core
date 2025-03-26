@@ -75,16 +75,18 @@ SwitchFromMain:							// Used to shift context to idle task
 	bl		getSaveMainContextPtr
 	stmdb	r0!,	{r4-r11}			// save r4 - r11 to main context save in kernel
 	bl		getSaveMainContextPtr2
-	pop		{LR}
-	add		sp,		#0x4
 
 	mrs		r1,		xPSR
 	mov		r3,		LR
 	mov		r4,		r12
 	stmdb	r0!,	{r3-r4}				// saves link register, program status register, and
 	str		r1,		[r0, #-8]!			//	Previous context should be mostly saved by this point.
-										//TODO:	Work in progress, finish function
+
 	bl getIdleStackPointer
+
+	pop		{LR}
+	add		sp,		#0x4
+
 	msr		psp,	r0					// Store Idle task's stack pointer to PSP
 	mov		r0,		#0x2
 	msr		CONTROL, r0					// Switch to PSP

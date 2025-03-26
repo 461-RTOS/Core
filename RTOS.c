@@ -169,7 +169,7 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
             return osOK;
         }
         else{
-            QueuePush(task);
+            // QueuePush(task);
             // TODO: halt task [without suspending] (ie put task to sleep until semaphire is released, and acquired by this task)
         }
     }
