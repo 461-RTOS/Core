@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "RTOS.h" // RTOS.h must be included LAST in order to avoid definition conflicts for opaque types (such as TaskHandle and SemaphoreHandle)
 #include "interrupt_config.h"
+#include "scheduler.h"
 /********************************************************************************************
 *   Returning a task handle, The StartTask() function takes the function pointer            *
 *   to a task as a parameter, as well as the stack size (in 32-bit words),                  *

@@ -103,16 +103,16 @@ void OsStart(void);
 
 
 /********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*   Halts Kernel Operation
+*
 *********************************************************************************************/
 void OsStop(void);
 
 
 
 /********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*	Uninitializes Kernel, cleaning up remaining tasks as well as TCB
+*
 *********************************************************************************************/
 void OsKill(void);
 
