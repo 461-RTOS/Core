@@ -3,13 +3,20 @@
 
 .global PendSV_Handler
 .type PendSV_Handler %function
+.global	SwitchFromMain
+.type SwitchFromMain %function
+.global SwitchToMain
+.type SwitchToMain %function
+
 
 .extern getCurrentTask
 .extern getSaveContextPtr
 .extern selectNextTask
-.extern getLoadContextPt
+.extern getLoadContextPtr
 .extern getSaveMainContextPtr
 .extern getLoadMainContextPtr
+.extern getSaveMainContextPtr2
+.extern getLoadMainContextPtr2
 
 .text
 .align 2
@@ -64,10 +71,16 @@ SwitchFromMain:							// Used to shift context to idle task
 	push	{LR}
 	bl		getSaveMainContextPtr
 	stmdb	r0!,	{r4-r11}
+	bl		getSaveMainContextPtr2
+	pop		{LR}
+	add		sp,		#0x4
+
 	mrs		r1,		xPSR
-
-
-
+	mov		r3,		LR
+	mov		r4,		r12					// We don't care about preserving program counter here;
+	stmdb	r0!,	{r3-r4}
+	str		r1,		[r0, #-8]!			//	Previous context should be mostly saved by this point.
+										//TODO:	Work in progress, finish function
 
 
 .align 2

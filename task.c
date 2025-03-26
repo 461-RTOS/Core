@@ -42,7 +42,7 @@ bool appendTasktoKernel(TaskHandle task){			// adds completed task initializatio
 
 
 void * getSaveMainContextPtr(void){		// Used when starting kernel
-	return &kernel->mainPC;
+	return &kernel->buffer;
 }
 
 void * getSaveMainContextPtr2(void){

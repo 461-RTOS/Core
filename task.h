@@ -32,7 +32,7 @@ typedef struct Kernel{
     TaskHandle idleTask;
     QueuePointers taskQueue;
     contextBuffer mainContext;		// main program context can be saved here until kernel is stopped
-    void * mainPC;					// main program counter might need to be preserved when kernel is started.
+    void * buffer;					// buffer for pointer
 }Kernel;
 
 extern Kernel * kernel;
