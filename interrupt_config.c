@@ -5,12 +5,14 @@
 
 static SysTick_Type previousSystickContext;
 
+
+
 void SysTick_Init(uint32_t ticksPerSec){
 	previousSystickContext.LOAD = SysTick->LOAD;	// Saves context for later when uninitializing system.
 	previousSystickContext.VAL = SysTick->VAL;
 	uint32_t reloadVal = (SystemCoreClock / ticksPerSec) - 1;
 	SysTick->LOAD = reloadVal;						// Sets how often SysTick is reloaded
-	NVIC_SetPriority(SysTick_IRQn, 0xFE);			// Sets SysTick to a low priority interrupt (but still higher than PendSV)
+	NVIC_SetPriority(SysTick_IRQn, 0x0E);			// Sets SysTick to a low priority interrupt (but still higher than PendSV)
 	SysTick->VAL = 0;								// Reset SysTick counter.
 
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk 	|   // Use CPU clock (not external)
@@ -25,16 +27,18 @@ void SysTick_Restore(void){
 }
 
 
+
+
 void PendSV_Init(void)
 {
 
-    __set_BASEPRI(0xFF); // Block PendSV Interrupts
+    __set_BASEPRI(0x0F); // Block PendSV Interrupts
 
     // 2. Clear any previous pending PendSV requests (extra safety)
     SCB->ICSR |= SCB_ICSR_PENDSVCLR_Msk;
 
     // 3. Set PendSV to lowest priority
-    NVIC_SetPriority(PendSV_IRQn, 0xFF);
+    NVIC_SetPriority(PendSV_IRQn, 0x0F);
 
     // 4. Leave BASEPRI raised until you're ready to start the scheduler
 }

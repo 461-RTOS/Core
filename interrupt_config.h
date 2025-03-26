@@ -1,13 +1,14 @@
 #ifndef INTERRUPT_CONFIG_H_
 #define INTERRUPT_CONFIG_H_
 #include <stdint.h>
-#include <stdbool.h>
+
+
 
 
 // Enum to be passed to AtomicStart based on needs of Critical Section
 typedef enum AtomicBlockLevel{
-	ATOMIC_BLOCK_TASK_SCHEDULER = 0xFF,		// Blocks Task Scheduler (PendSV)
-	ATOMIC_BLOCK_SYSTICK = 0xFE,			// Blocks SysTick and Task Scheduler
+	ATOMIC_BLOCK_TASK_SCHEDULER = 0x0F,		// Blocks Task Scheduler (PendSV)
+	ATOMIC_BLOCK_SYSTICK = 0x0E,			// Blocks SysTick and Task Scheduler
 	ATOMIC_BLOCK_ALL = 0x01					// Blocks all interrupts except priority 0
 }AtomicBlockLevel;
 
