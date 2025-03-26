@@ -28,6 +28,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
         free(handle);
         return NULL;                                // Returns NULL after freeing handle, if stack allocation fails.
     }
+    handle->lastRunTime = 0;						// set to zero for now, may set to uwtick later
     handle->stackTail = stack;						// stack tail saved for cleanup (needs to be freed when task is removed)
     handle->retval = retVal;						// sets location to store return value
     // these values need to be initialized so when a context switch occurs, these values start the task properly for the first time.
@@ -172,6 +173,7 @@ void __attribute__((weak)) idleProcess(void){
 
 // initializes idle process during kernel start
 void * idleProcInitializer(void * args){	// args and return values unused; just part of the function type tasks use
+	isKernelActive = true;					// idle process initializer will allow SysTick to begin task switching
 	idleProcess();
 	return NULL;
 }
