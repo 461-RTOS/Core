@@ -1,9 +1,11 @@
+#define RTOS__INTERNAL_
 #include "semaphore.h"
 #include "task.h"
 #include <stdlib.h>
 #include "RTOS.h" // RTOS.h must be included LAST in order to avoid definition conflicts for opaque types (such as TaskHandle and SemaphoreHandle)
 #include "interrupt_config.h"
 #include "scheduler.h"
+#include "main.h"
 /********************************************************************************************
 *   Returning a task handle, The StartTask() function takes the function pointer            *
 *   to a task as a parameter, as well as the stack size (in 32-bit words),                  *
@@ -91,11 +93,12 @@ void DeleteTask(TaskHandle handle){
 /********************************************************************************
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
-OS_Status OsInitialize(uint32_t time_slices){
+OS_Status OsInitialize(uint32_t ticksPerSec){
     kernel = calloc(1, sizeof(TaskControlBlock));
     if (kernel == NULL){
     	return osErrorResource;
     }
+    SysTick_Init(ticksPerSec);
     return osOK;
 }
 
@@ -180,7 +183,9 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 
 // weak idle process, can be overwritten with a custom one
 void __attribute__((weak)) idleProcess(void){
-	while(1);
+	while(1){
+		// HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
+	}
 }
 
 // initializes idle process during kernel start

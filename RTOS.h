@@ -92,7 +92,7 @@ void DeleteTask(TaskHandle handle);
 /********************************************************************************************
 *   Initializes the kernel
 *********************************************************************************************/
-OS_Status OsInitialize(uint32_t time_slices);
+OS_Status OsInitialize(uint32_t ticksPerSec);
 
 
 
