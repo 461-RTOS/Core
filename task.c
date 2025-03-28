@@ -49,7 +49,7 @@ void * getSaveMainContextPtr(void){		// Used when starting kernel
 }
 
 void * getLoadMainContextPtr(void){		// Used when stopping kernel
-	return &kernel->mainContext;
+	return &kernel->mainContext.r12;
 }
 
 
