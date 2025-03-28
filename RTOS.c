@@ -102,7 +102,7 @@ OS_Status OsInitialize(uint32_t ticksPerSec){
     return osOK;
 }
 
-void SwitchFromMain(void);
+void SwitchFromMain(void); // prototype needed for OsStartFunction
 /********************************************************************************
 *   This is a generic comment block that will tell us what the following function
 *   is supposed to do.
@@ -121,12 +121,15 @@ OS_Status OsStart(void){
 	return osOK;
 }
 
+void SwitchToMain(void);	// Prototype needed for OsStopFunction
 /********************************************************************************
 *   This is a generic comment block that will tell us what the following function
 *   is supposed to do.
 *********************************************************************************/
 void OsStop(void){
     // This is a generic line comment to give more insight on specific lines
+	isKernelActive = false;
+	SwitchToMain();
 }
 
 /********************************************************************************
@@ -183,7 +186,13 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 
 // weak idle process, can be overwritten with a custom one
 void __attribute__((weak)) idleProcess(void){
+//	puts("Idle Process is Active!");
+//	int i = 0;
 	while(1){
+//		if (!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)){
+//			OsStop();
+//		}
+//		printf("It's Working!!! (%d)\n", i++);
 		// HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
 	}
 }

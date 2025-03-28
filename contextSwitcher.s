@@ -16,8 +16,6 @@
 .extern getLoadContextPtr
 .extern getSaveMainContextPtr
 .extern getLoadMainContextPtr
-.extern getSaveMainContextPtr2
-.extern getLoadMainContextPtr2
 .extern getIdleStackPointer
 .extern idleProcInitializer
 
@@ -81,7 +79,7 @@ SwitchFromMain:							// Used to shift context to idle task
 	sub		r0,		#0x4				// sub 4 more to point to PC (to skip)
 	ldr		r4,		[sp]				// copy link register from stack
 	mov		r3,		r12
-	stmdb	r0!,	{r3-r4}				// saves link register, and program status register
+	stmdb	r0!,	{r3-r4}				// saves link register, and r12
 //	Previous context should be mostly saved by this point. No need to save r0-r3, as they are volatile scratch registers
 
 	bl getIdleStackPointer				// get idle stack pointer to store in psp
@@ -100,5 +98,29 @@ SwitchFromMain:							// Used to shift context to idle task
 
 .align 2
 SwitchToMain:
+
+	mov		r0,		#0x0
+	msr		CONTROL, r0					// Switch back to main stack pointer
+
+	bl	getLoadMainContextPtr
+
+	ldmia	r0!,	{r3-r4}				// Restore R12 (in r3) and Link Register (in r4)
+	mov 	r12,	r3
+	mov		LR,		r4
+
+	add		r0,		#0x4				// skip address of PC, we don't care about it here
+
+	ldr		r1,		[r0], #0x4			// Restore program status register
+	// msr		xPSR,	r1				// Don't know why I was trying to save it; it is volatile between function calls anyways
+	add		r0,		#0x4				// skip stack pointer (not saved, as existing stack pointer MSR shouldn't be mangled)
+
+	ldmia	r0!,	{r4-r11}
+
+	bx		lr							// return to OsStart after SwitchFromMain was called
+
+
+
+
+
 
 
