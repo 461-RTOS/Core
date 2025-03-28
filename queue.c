@@ -5,10 +5,25 @@
 
 static QueuePointers Queue;
 
+int comparePriority(TaskHandle *a,TaskHandle *b){
+    TaskProperties firstArg = (*a)->User_Properties;
+    TaskProperties secondArg = (*b)->User_Properties;
+    if (firstArg.priority < secondArg.priority){
+        return -1;
+    }
+    else if (firstArg.priority > secondArg.priority){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 QueuePointers taskQueueInit(TaskHandle* tasks){
-    //QueueObject taskObject;
-    //taskObject.data = tasks;
+    QueueObject taskObject;
+    taskObject.data = tasks;
     //QueueObject *head = Queue.qHead;
+    qsort(tasks, 2,8,comparePriority);
     int taskCount = kernel->taskCount;
     for (int i=0; i==taskCount;i++){
         if (Queue.qHead == NULL){
