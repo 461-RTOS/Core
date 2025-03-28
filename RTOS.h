@@ -40,6 +40,15 @@ typedef enum OS_Status{
 
 typedef enum OS_Status OS_Status;
 
+typedef enum TaskPriority{
+	PRIORITY_REALTIME = 0x00,
+	PRIORITY_VERY_HIGH,
+	PRIORITY_HIGH,
+	PRIORITY_NORMAL,
+	PRIORITY_LOW,
+	PRIORITY_IDLE = 0xFF
+}TaskPriority;
+
 /*A simple typedef for Task Function Pointers:
 Task functions must take a void pointer as an argument,
 and return a void pointer as well. can return NULL if return value is not used*/

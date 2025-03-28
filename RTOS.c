@@ -21,11 +21,19 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     if (task == NULL){
     	return NULL;	// Don't even bother if you won't hand me a real task!
     }
+    if (stackSize < 16){			// Stack should be at LEAST 16 words large (64 bytes, bare-minimum)
+    	return NULL;
+    }
 	TaskHandle handle = malloc(sizeof(TaskControlBlock));
     char * stack; // cast to char for pointer arithmetic
     if (handle == NULL)
         return NULL;        // Allocation failed returns NULL
     handle->User_Properties = properties;
+    handle->suspended = properties.isSuspended;
+    handle->priority = properties.priority;
+    handle->status  = TASK_READY;
+    handle->lastRunTime = 0;
+    handle->lastStartTime = 0;
     stack = malloc((stackSize * 4) + 4);           // Allocates [stackSize] 32-bit (4 byte) words for stack space
     if (stack == NULL){
         free(handle);
@@ -36,11 +44,11 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     handle->retval = retVal;						// sets location to store return value
     // these values need to be initialized so when a context switch occurs, these values start the task properly for the first time.
     handle->contextBuffer.r0 = (uint32_t) args;			// Store args as parameter 1 in r0
-    handle->contextBuffer.PC = (uint32_t) task;			// Store beginning of function address as PC value to start executing at
+    handle->contextBuffer.PC = ((uint32_t) task) & (~(0x00000001));			// Store beginning of function address as PC value to start executing at (need to clear thumb-bit)
     handle->contextBuffer.LR = (uint32_t) returnRoutine;// Return Routine stored in Link Register so if function terminates, it enters a routine designed to clean up the task
     handle->contextBuffer.sp = (uint32_t) stack + (stackSize * 4) + 4;		// tail of stack is set to stack pointer; stack pointer is incremented to the head
     handle->contextBuffer.sp &= ~((uint32_t) 0x7);		// lower 3 bits are cleared for 8 byte alignment of stack
-
+    handle->contextBuffer.sp -= 36;					// adjust for proper context switching
     if (appendTasktoKernel(handle)){                   // Task is added to TCB. Returns NULL, if it fails to add to the TCB, function returns false.
         return handle;                              // returns handle only after verifying task handle has been added to TCB
     }
@@ -64,6 +72,7 @@ void returnRoutine(void * retVal){                  // Return routine's address 
 *********************************************************************************/
 void ChangeTaskProperties(TaskHandle handle, TaskProperties properties){
     handle->User_Properties = properties;
+    handle->suspended = properties.isSuspended;
 }
 
 /********************************************************************************
@@ -72,6 +81,7 @@ void ChangeTaskProperties(TaskHandle handle, TaskProperties properties){
 *********************************************************************************/
 void ToggleTaskSuspend(TaskHandle handle){
     handle->User_Properties.isSuspended = !handle->User_Properties.isSuspended;
+    handle->suspended = !handle->suspended;
 }
 
 /********************************************************************************
@@ -79,7 +89,7 @@ void ToggleTaskSuspend(TaskHandle handle){
 *   
 *********************************************************************************/
 bool IsTaskSuspended(TaskHandle handle){
-    return handle->User_Properties.isSuspended;
+    return handle->suspended;
 }
 
 /********************************************************************************
@@ -94,7 +104,7 @@ void DeleteTask(TaskHandle handle){
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
 OS_Status OsInitialize(uint32_t ticksPerSec){
-    kernel = calloc(1, sizeof(TaskControlBlock));
+    kernel = calloc(1, sizeof(TaskControlBlock));		// Kernel values should be initialized to 0
     if (kernel == NULL){
     	return osErrorResource;
     }
@@ -111,12 +121,16 @@ OS_Status OsStart(void){
 	if (kernel == NULL){
 		return osErrorUninitialized;
 	}
-	TaskProperties properties = {0xFF, 0x00, false};
+	TaskProperties properties = {PRIORITY_IDLE, 0x00, false};
 	TaskHandle idleTask = CreateTask(idleProcInitializer, 128, NULL, NULL, properties);
 	if (idleTask == NULL){
 		return	osErrorAllocationFailure;
 	}
 	kernel->idleTask = idleTask;
+	kernel->currentTask = idleTask;
+	idleTask->lastRunTime = 0;
+	idleTask->lastStartTime = HAL_GetTick();
+	PendSV_Init();
 	SwitchFromMain();		// Hands control to the RTOS Kernel
 	return osOK;
 }

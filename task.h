@@ -8,6 +8,12 @@ typedef TaskControlBlock* TaskHandle;
 #include "RTOS.h"
 #include "queue.h"
 
+typedef enum TaskStatus{
+	TASK_READY = 0,
+	TASK_RUNNING,
+	TASK_BLOCKED,
+}TaskStatus;
+
 typedef struct contextBuffer{ //buffer containing register values, labeled accordingly.
 	uint32_t  	r0,   r1,   r2,   r3,   r12,  LR,   PC,    xPSR,   sp,
 				r4,   r5,   r6,   r7,   r8,   r9,   r10,   r11;
@@ -18,9 +24,13 @@ typedef struct contextBuffer{ //buffer containing register values, labeled accor
 typedef struct TaskControlBlock{             	// A pointer to this struct can be used as a task handle, for user opacity, this is typedefed sas a void pointer to typedef void* TaskHandle;
 	contextBuffer contextBuffer;
     TaskProperties User_Properties;
-    uint32_t lastRunTime;
+    uint32_t lastStartTime;						// tick time at last start
+    uint32_t lastRunTime;						// tick time at last finish
     void ** retval;                          	// Allows a return value pointer to be stored at a location pointed to by retVal.
     void * stackTail;                           // Hold stack tail to free from when deleting a task
+    TaskStatus status;
+    bool suspended;
+    uint8_t priority;
 }TaskControlBlock;
 
 // The Kernel structure will be used to locate currently active tasks, as well as choose which task to run when context switching
@@ -32,7 +42,6 @@ typedef struct Kernel{
     TaskHandle idleTask;
     QueuePointers taskQueue;
     contextBuffer mainContext;		// main program context can be saved here until kernel is stopped
-    void * buffer;					// buffer for pointer
 }Kernel;
 
 extern Kernel * kernel;

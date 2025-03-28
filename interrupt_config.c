@@ -33,7 +33,7 @@ void SysTick_Restore(void){
 void PendSV_Init(void)
 {
 
-    __set_BASEPRI(0x0F); // Block PendSV Interrupts
+    //__set_BASEPRI(0x0F); // Block PendSV Interrupts
 
     // 2. Clear any previous pending PendSV requests (extra safety)
     SCB->ICSR |= SCB_ICSR_PENDSVCLR_Msk;
@@ -41,7 +41,7 @@ void PendSV_Init(void)
     // 3. Set PendSV to lowest priority
     NVIC_SetPriority(PendSV_IRQn, 0x0F);
 
-    // 4. Leave BASEPRI raised until you're ready to start the scheduler
+    //__set_BASEPRI(0x00);	// Allow all interrupts; nothing is blocked
 }
 
 void setPendSV(void){	// Sets pendSV to pending, will call the interrupt for the pendSV handler as soon as it isn't being blocked by higher priority interrupts.

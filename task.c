@@ -2,6 +2,7 @@
 #include "task.h"
 #include "queue.h"
 #include "scheduler.h"
+#include "main.h"
 
 
 Kernel * kernel = NULL;    // Empty, uninitialized Task Control Block
@@ -9,7 +10,10 @@ Kernel * kernel = NULL;    // Empty, uninitialized Task Control Block
 
 TaskHandle selectNextTask(void){
     TaskHandle nextTask = kernel->nextTask;
+    uint32_t currentTick = HAL_GetTick();
+    kernel->currentTask->lastRunTime = currentTick;
     kernel->currentTask = nextTask;
+    kernel->currentTask->lastStartTime = currentTick;
     kernel->nextTask = NULL;
     return nextTask;
 }
@@ -23,7 +27,8 @@ void setCurrentTask(TaskHandle task){
 }
 
 void * getSaveContextPtr(TaskHandle task){		// used when saving context to buffer (Points to end of buffer so stmdb can decrement backwards to the beginning of buffer when saving)
-    return (void*) &task->User_Properties;
+    return (char*) &task->contextBuffer + (sizeof(contextBuffer));
+
 }
 
 void * getLoadContextPtr(TaskHandle task){		// used when loading context from buffer (points to beginning of buffer so ldmia can increment toward the end of buffer when loading)
@@ -45,7 +50,7 @@ bool appendTasktoKernel(TaskHandle task){			// adds completed task initializatio
 
 
 void * getSaveMainContextPtr(void){		// Used when starting kernel
-	return &kernel->buffer;
+	return (char*) &kernel->mainContext + sizeof(contextBuffer);
 }
 
 void * getLoadMainContextPtr(void){		// Used when stopping kernel
