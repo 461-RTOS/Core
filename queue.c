@@ -5,32 +5,31 @@
 
 static QueuePointers Queue;
 
+
+/** Following function is needed for qsort to sort our array of tasks*/
 int comparePriority(TaskHandle *a,TaskHandle *b){
-    TaskProperties firstArg = (*a)->User_Properties;
+    TaskProperties firstArg = (*a)->User_Properties; //a bit weird but the pointers need to be dereferenced
     TaskProperties secondArg = (*b)->User_Properties;
-    if (firstArg.priority < secondArg.priority){
+    if (firstArg.priority < secondArg.priority){ //according to qsort we need a negative integer for less
         return -1;
     }
-    else if (firstArg.priority > secondArg.priority){
+    else if (firstArg.priority > secondArg.priority){//positive for more
         return 1;
     }
-    else{
+    else{//0 for equal
         return 0;
     }
 }
-
+/** Function Initializing the task Queue **/
 QueuePointers taskQueueInit(TaskHandle* tasks){
-    QueueObject taskObject;
-    taskObject.data = tasks;
-    //QueueObject *head = Queue.qHead;
-    qsort(tasks, 2,8,comparePriority);
-    int taskCount = kernel->taskCount;
+    int taskCount = kernel->taskCount; //sets a variable for the number of tasks
+    qsort(tasks, taskCount,8,comparePriority);// calling qsort to sort the array
     for (int i=0; i==taskCount;i++){
         if (Queue.qHead == NULL){
-            queuePush(tasks[i]);
+            queuePush(tasks[i]); //check for a NULL head
         }
         else{
-            QueueObject* nextNode = malloc(sizeof(QueueObject));
+            QueueObject* nextNode = malloc(sizeof(QueueObject));// setting aside memeory and then placing elements into the queue
             nextNode->data = tasks[i];
             nextNode->next = NULL;
             Queue.qTail->next = nextNode;
