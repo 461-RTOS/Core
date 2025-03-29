@@ -7,9 +7,9 @@ static QueuePointers Queue;
 
 
 /** Following function is needed for qsort to sort our array of tasks*/
-int comparePriority(TaskHandle *a,TaskHandle *b){
-    TaskProperties firstArg = (*a)->User_Properties; //a bit weird but the pointers need to be dereferenced
-    TaskProperties secondArg = (*b)->User_Properties;
+int comparePriority(const void * a, const void * b){
+    TaskProperties firstArg = ((TaskHandle)a)->User_Properties; //a bit weird but the pointers need to be dereferenced
+    TaskProperties secondArg = ((TaskHandle)b)->User_Properties;
     if (firstArg.priority < secondArg.priority){ //according to qsort we need a negative integer for less
         return -1;
     }
@@ -21,9 +21,9 @@ int comparePriority(TaskHandle *a,TaskHandle *b){
     }
 }
 /** Function Initializing the task Queue **/
-QueuePointers taskQueueInit(TaskHandle* tasks){
+QueuePointers* taskQueueInit(TaskHandle* tasks){
     int taskCount = kernel->taskCount; //sets a variable for the number of tasks
-    qsort(tasks, taskCount,8,comparePriority);// calling qsort to sort the array
+    qsort(tasks, taskCount, sizeof(TaskHandle), comparePriority);// calling qsort to sort the array		// Changed arg3 from 8 to sizeof(TaskHandle) NEVER USE A CONSTANT FOR A SIZE - Use sizeof(instead), (especially because the size of a pointer on our platform is 4 not 8)
     for (int i=0; i==taskCount;i++){
         if (Queue.qHead == NULL){
             queuePush(tasks[i]); //check for a NULL head
@@ -37,8 +37,9 @@ QueuePointers taskQueueInit(TaskHandle* tasks){
         }
         i++;
     }
-    
-}
+    return NULL;												// Honestly, I'm not sure what you are doing here, but your function is set up to return
+}																// something, but it isn't returning anything. I can't guaruntee your function works,
+																// but I'm having it return NULL until that is figured out, in order to avoid warnings
 
 bool isQueueEmpty(void){ //for user use, returns a bool to check if the queue is empty
     if (Queue.qHead == NULL && Queue.qTail == NULL){

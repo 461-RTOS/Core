@@ -4,7 +4,7 @@
 #include "RTOS.h"
 #include "main.h"
 
-static QueuePointers taskQueue;
+//static QueuePointers taskQueue;
 
 bool isKernelActive = false; // must be manually set before SysTick Handler tries to schedule tasks.
 
