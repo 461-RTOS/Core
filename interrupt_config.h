@@ -7,7 +7,7 @@
 
 // Enum to be passed to AtomicStart based on needs of Critical Section
 typedef enum AtomicBlockLevel{
-	ATOMIC_BLOCK_TASK_SCHEDULER = 0x0F,		// Blocks Task Scheduler (PendSV)
+	ATOMIC_BLOCK_TASK_SCHEDULER = 0x80,		// Blocks Task Scheduler (PendSV)
 	ATOMIC_BLOCK_SYSTICK = 0x0E,			// Blocks SysTick and Task Scheduler
 	ATOMIC_BLOCK_ALL = 0x01					// Blocks all interrupts except priority 0
 }AtomicBlockLevel;
