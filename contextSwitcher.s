@@ -10,6 +10,8 @@
 
 
 
+
+
 .extern getCurrentTask
 .extern getSaveContextPtr
 .extern selectNextTask
@@ -19,9 +21,10 @@
 .extern getIdleStackPointer
 .extern idleProcInitializer
 
+
 .text
 .align 2
-PendSV_Handler:
+PendSV_Handler:							// manages context switching through exceptions
 
 	sub		sp,		#0x4				// decrement for alignment during call
 	push 	{lr}                   		// pushes link register, needed for proper return
@@ -65,7 +68,7 @@ PendSV_Handler:
 
 
 .align 2
-SwitchFromMain:							// Used to shift context to idle task
+SwitchFromMain:							// Used to shift context to idle task (hands control from main process to kernel)
 
 	sub 	sp, 	#0x4
 	push	{LR}
@@ -96,7 +99,7 @@ SwitchFromMain:							// Used to shift context to idle task
 
 
 .align 2
-SwitchToMain:
+SwitchToMain:							// Is used by an active task to return control from kernel
 
 	mov		r0,		#0x0
 	msr		CONTROL, r0					// Switch back to main stack pointer
@@ -114,6 +117,9 @@ SwitchToMain:
 	add		r0,		#0x4				// skip stack pointer (not saved, as existing stack pointer MSR shouldn't be mangled)
 
 	ldmia	r0!,	{r4-r11}
+
+	dsb
+	isb
 
 	bx		lr							// return to OsStart after SwitchFromMain was called
 

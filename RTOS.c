@@ -153,6 +153,17 @@ void OsKill(void){
     // This is a generic line comment to give more insight on specific lines
 }
 
+void OsDelay(uint32_t ticks){
+	//disableScheduler();
+	TaskHandle task = getCurrentTask();
+	task->delayTime = HAL_GetTick() + ms;
+	task->status = TASK_WAITING;
+	TaskScheduler();
+	//enableScheduler();
+	setPendSV();
+	while (task->status != TASK_READY);
+	return;
+}
 
 /********************************************************************************************************
 SEMAPHORE FUNCTIONS

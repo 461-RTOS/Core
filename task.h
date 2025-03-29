@@ -12,6 +12,7 @@ typedef enum TaskStatus{
 	TASK_READY = 0,
 	TASK_RUNNING,
 	TASK_BLOCKED,
+	TASK_WAITING
 }TaskStatus;
 
 typedef struct contextBuffer{ //buffer containing register values, labeled accordingly.
@@ -27,6 +28,7 @@ typedef struct TaskControlBlock{             	// A pointer to this struct can be
     uint32_t lastRunTime;						// tick time at last finish (or start if currently running)
     void ** retval;                          	// Allows a return value pointer to be stored at a location pointed to by retVal.
     void * stackTail;                           // Hold stack tail to free from when deleting a task
+    uint32_t delayTime;							// Delay time for OsDelays
     TaskStatus status;
     bool suspended;
     uint8_t priority;

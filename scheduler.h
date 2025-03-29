@@ -8,7 +8,7 @@ extern bool isKernelActive;
 
 void SysTick_Handler(void);
 
-
+bool TaskScheduler(void);
 
 
 #endif
