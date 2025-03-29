@@ -74,3 +74,16 @@ AtomicStatus AtomicStop(void){
 	__set_BASEPRI(prevBasePri);
 	return ATOMIC_OK;
 }
+
+//AtomicStatus AtomicStart(AtomicBlockLevel level) {
+//    uint32_t tempprevBasePri = __get_BASEPRI(); // Save current BASEPRI
+//    __set_BASEPRI(level); // Disable PendSV and possibly other low-priority interrupts
+//    prevBasePri = tempprevBasePri; // Store previous BASEPRI for restoration
+//    return ATOMIC_OK;
+//}
+//
+//AtomicStatus AtomicStop(void) {
+//    __set_BASEPRI(prevBasePri); // Restore previous BASEPRI to allow context switching again
+//    return ATOMIC_OK;
+//}
+
