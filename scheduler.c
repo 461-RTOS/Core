@@ -9,54 +9,54 @@
 bool isKernelActive = false; // must be manually set before SysTick Handler tries to schedule tasks.
 
 
-bool TaskScheduler(void){	// Returns true if new task has been found; false if new task has not been found.
-	TaskHandle currentTask = kernel->currentTask;
-	uint32_t currentTick = HAL_GetTick();
+bool TaskScheduler(void) { // Returns true if new task has been found; false if new task has not been found.
+    TaskHandle currentTask = kernel->currentTask; // currently active task
+    TaskHandle bestCandidate = kernel->idleTask;
+    uint32_t currentTick = HAL_GetTick();
 
-	for (uint32_t i = 0; i < kernel->taskCount; i++){
-		TaskHandle candidate = kernel->tasks[i];
+    for (uint32_t i = 0; i < kernel->taskCount; i++) {
+        TaskHandle candidate = kernel->tasks[i];
 
-		if (!candidate->suspended && candidate->status == TASK_WAITING){
-			if (currentTick >= candidate->delayTime){
-				currentTask = candidate;
-				currentTask->status = TASK_READY;
-				kernel->nextTask = currentTask;
-				return true;										// Tasks stopped with delays are resumed under high priority
-			}
-			continue;
-		}
+        if (!candidate->suspended) {
+            if (candidate->status == TASK_WAITING && currentTick >= candidate->delayTime) {
+                candidate->status = TASK_READY;
+            }
+        }
 
+        if (candidate == currentTask) // Don't bother checking current task
+            continue;
 
-		if (candidate == kernel->currentTask)						// Don't bother checking current task
-			continue;
+        if (!candidate->suspended && candidate->status == TASK_READY) { // Only consider tasks that aren't suspended and are flagged "Ready"
+            if (candidate->priority < bestCandidate->priority) {
+                bestCandidate = candidate; // If a task isn't blocked, and is higher priority, it unquestionably becomes most likely candidate
+            } else if (candidate->priority == bestCandidate->priority && candidate->lastRunTime <= bestCandidate->lastRunTime) {
+                bestCandidate = candidate; // If the priority is the same as current task, it checks which task has waited longer since last run
+            }
+        }
+    }
 
-		if (!candidate->suspended && candidate->status == TASK_READY){	// Only consider tasks that aren't suspended and are flagged "Ready"
-			if (candidate->priority < currentTask->priority){
-				currentTask = candidate;							// If a task isn't blocked, and is higher priority, it unquestionably becomes most likely candidate
-			}
-			else if (currentTask->status != TASK_READY || (candidate->priority == currentTask->priority && candidate->lastRunTime <= currentTask->lastRunTime)){
-				currentTask = candidate;						// If the priority is the same as current task, it checks which task has waited longer since last run
-			}
-		}
-	}
+    if (bestCandidate == currentTask) {
+        return false; // don't switch tasks if candidate is active task
+    }
 
-	if (currentTask == kernel->currentTask){
-		return false;														// don't switch tasks if candidate is active task
-	}
-	if (kernel->currentTask->status != TASK_READY || kernel->currentTask->suspended){	// Catches bad fail during non-ready tasks
-		kernel->nextTask = currentTask;
-		return true;
-	}
-	if(kernel->currentTask->priority > currentTask->priority){
-		kernel->nextTask = currentTask;							// if candidate is higher priority than active task, set to next task and queue switch
-		return true;
-	}
-	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastRunTime >= (HAL_GetTick() - 5)){
-		kernel->nextTask = currentTask;		// if current active task is same priority as candidate, switch if active task has overstayed its welcome and queue switch
-		return true;
-	}
-	return false;
+    if (currentTask->status != TASK_READY || currentTask->suspended) { // Catches bad fail during non-ready tasks
+        kernel->nextTask = bestCandidate;
+        return true;
+    }
+
+    if (currentTask->priority > bestCandidate->priority) {
+        kernel->nextTask = bestCandidate; // if candidate is higher priority than active task, set to next task and queue switch
+        return true;
+    }
+    // If current task shares a priority with other candidates, it is allowed to run for up to 5 ticks before it must yield to another task
+    if (bestCandidate->priority == currentTask->priority && currentTask->lastRunTime >= (currentTick - 5)) {
+        kernel->nextTask = bestCandidate;
+        return true;
+    }
+
+    return false;
 }
+
 
 void SysTick_Handler(void){
     //      create task object with this function as data?
