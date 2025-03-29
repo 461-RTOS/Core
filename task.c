@@ -18,6 +18,10 @@ TaskHandle selectNextTask(void){
     return nextTask;
 }
 
+TaskHandle seeNextTask(void){
+	return kernel->nextTask;
+}
+
 TaskHandle getCurrentTask(void){
     return kernel->currentTask;
 }

@@ -155,9 +155,11 @@ void OsKill(void){
 
 void OsDelay(uint32_t ticks){
 	//disableScheduler();
+	uint32_t Systicks = HAL_GetTick();
 	TaskHandle task = getCurrentTask();
-	task->delayTime = HAL_GetTick() + ticks;
+	task->delayTime = Systicks + ticks;
 	task->status = TASK_WAITING;
+	task->lastRunTime = Systicks;
 	TaskScheduler();
 	//enableScheduler();
 	setPendSV();

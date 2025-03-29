@@ -23,6 +23,7 @@ bool TaskScheduler(void){	// Returns true if new task has been found; false if n
 				kernel->nextTask = currentTask;
 				return true;										// Tasks stopped with delays are resumed under high priority
 			}
+			continue;
 		}
 
 
@@ -33,7 +34,7 @@ bool TaskScheduler(void){	// Returns true if new task has been found; false if n
 			if (candidate->priority < currentTask->priority){
 				currentTask = candidate;							// If a task isn't blocked, and is higher priority, it unquestionably becomes most likely candidate
 			}
-			else if (candidate->priority == currentTask->priority && candidate->lastRunTime <= currentTask->lastRunTime){
+			else if (currentTask->status != TASK_READY || (candidate->priority == currentTask->priority && candidate->lastRunTime <= currentTask->lastRunTime)){
 				currentTask = candidate;						// If the priority is the same as current task, it checks which task has waited longer since last run
 			}
 		}
@@ -42,10 +43,14 @@ bool TaskScheduler(void){	// Returns true if new task has been found; false if n
 	if (currentTask == kernel->currentTask){
 		return false;														// don't switch tasks if candidate is active task
 	}
+	if (kernel->currentTask->status != TASK_READY || kernel->currentTask->suspended){	// Catches bad fail during non-ready tasks
+		kernel->nextTask = currentTask;
+		return true;
+	}
 	if(kernel->currentTask->priority > currentTask->priority){
-			kernel->nextTask = currentTask;							// if candidate is higher priority than active task, set to next task and queue switch
-			return true;
-		}
+		kernel->nextTask = currentTask;							// if candidate is higher priority than active task, set to next task and queue switch
+		return true;
+	}
 	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastRunTime >= (HAL_GetTick() - 5)){
 		kernel->nextTask = currentTask;		// if current active task is same priority as candidate, switch if active task has overstayed its welcome and queue switch
 		return true;

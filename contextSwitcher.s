@@ -20,6 +20,7 @@
 .extern getLoadMainContextPtr
 .extern getIdleStackPointer
 .extern idleProcInitializer
+.extern seeNextTask
 
 
 .text
@@ -28,6 +29,9 @@ PendSV_Handler:							// manages context switching through exceptions
 
 	sub		sp,		#0x4				// decrement for alignment during call
 	push 	{lr}                   		// pushes link register, needed for proper return
+	bl		seeNextTask
+	cmp		r0, 	#0x0
+	BEQ		.noTask
 	bl  	getCurrentTask           	// branch links into RTOS function to get current task handle
 	bl  	getSaveContextPtr        	// branch links into RTOS function, passing task handle to get pointer to save buffer (stored in r0)
 	pop		{lr}						// restore link register
@@ -62,7 +66,10 @@ PendSV_Handler:							// manages context switching through exceptions
 	isb									// flushes pipeline before switching contexts
 	bx lr								// branch exchange to link register (return) Stack exception frame will be restored to registers, and new context can execute
 
-
+.noTask:
+	pop		{lr}						// restore link register
+	add		sp,		#0x4				// restore previous alignment
+	bx		lr							// return without a task switch
 
 
 
