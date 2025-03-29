@@ -33,7 +33,6 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     handle->priority = properties.priority;
     handle->status  = TASK_READY;
     handle->lastRunTime = 0;
-    handle->lastStartTime = 0;
     stack = malloc((stackSize * 4) + 4);           // Allocates [stackSize] 32-bit (4 byte) words for stack space
     if (stack == NULL){
         free(handle);
@@ -129,8 +128,7 @@ OS_Status OsStart(void){
 	}
 	kernel->idleTask = idleTask;
 	kernel->currentTask = idleTask;
-	idleTask->lastRunTime = 0;
-	idleTask->lastStartTime = HAL_GetTick();
+	idleTask->lastRunTime =  HAL_GetTick();
 	PendSV_Init();
 	SwitchFromMain();		// Hands control to the RTOS Kernel
 	return osOK;

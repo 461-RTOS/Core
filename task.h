@@ -24,8 +24,7 @@ typedef struct contextBuffer{ //buffer containing register values, labeled accor
 typedef struct TaskControlBlock{             	// A pointer to this struct can be used as a task handle, for user opacity, this is typedefed sas a void pointer to typedef void* TaskHandle;
 	contextBuffer contextBuffer;
     TaskProperties User_Properties;
-    uint32_t lastStartTime;						// tick time at last start
-    uint32_t lastRunTime;						// tick time at last finish
+    uint32_t lastRunTime;						// tick time at last finish (or start if currently running)
     void ** retval;                          	// Allows a return value pointer to be stored at a location pointed to by retVal.
     void * stackTail;                           // Hold stack tail to free from when deleting a task
     TaskStatus status;

@@ -13,7 +13,7 @@ TaskHandle selectNextTask(void){
     uint32_t currentTick = HAL_GetTick();
     kernel->currentTask->lastRunTime = currentTick;
     kernel->currentTask = nextTask;
-    kernel->currentTask->lastStartTime = currentTick;
+    kernel->currentTask->lastRunTime = currentTick;
     kernel->nextTask = NULL;
     return nextTask;
 }

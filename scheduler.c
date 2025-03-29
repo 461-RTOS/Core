@@ -13,25 +13,28 @@ void TaskScheduler(void){
 
 	for (uint32_t i = 0; i < kernel->taskCount; i++){
 		TaskHandle candidate = kernel->tasks[i];
+		if (candidate == kernel->currentTask)
+			continue;
+
 		if (!candidate->suspended && candidate->status == TASK_READY){
 			if (candidate->priority < currentTask->priority){
 				currentTask = candidate;							// If a task isn't blocked, and is higher priority, it unquestionably becomes most likely candidate
 			}
-			else if (candidate->priority == currentTask->priority && candidate->lastRunTime < currentTask->lastRunTime){
+			else if (candidate->priority == currentTask->priority && candidate->lastRunTime <= currentTask->lastRunTime){
 				currentTask = candidate;						// If the priority is the same as current task, it checks which task has waited longer since last run
 			}
 		}
 	}
 
+	if (currentTask == kernel->currentTask){
+		return;														// don't switch tasks if candidate is active task
+	}
 	if(kernel->currentTask->priority > currentTask->priority){
 			kernel->nextTask = currentTask;							// if candidate is higher priority than active task, set to next task and queue switch
 			setPendSV();
 			return;
 		}
-	if (currentTask == kernel->currentTask){
-		return;														// don't switch tasks if candidate is active task
-	}
-	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastStartTime >= (HAL_GetTick() - 10)){
+	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastRunTime >= (HAL_GetTick() - 10)){
 		kernel->nextTask = currentTask;		// if current active task is same priority as candidate, switch if active task has overstayed its welcome and queue switch
 		setPendSV();
 	}
