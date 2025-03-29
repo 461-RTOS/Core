@@ -7,7 +7,8 @@ typedef SemaphoreContext* SemaphoreHandle;
 // Binary Semaphore Definition
 typedef struct SemaphoreContext{
     uint8_t semaphoreState :1;          // 1 == acquired; 0 == released;
-    QueuePointers taskQueue;
+    uint8_t taskCount;
+    TaskHandle * tasks;
 }SemaphoreContext;
 
 
