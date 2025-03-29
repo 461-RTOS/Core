@@ -46,7 +46,7 @@ bool TaskScheduler(void){	// Returns true if new task has been found; false if n
 			kernel->nextTask = currentTask;							// if candidate is higher priority than active task, set to next task and queue switch
 			return true;
 		}
-	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastRunTime >= (HAL_GetTick() - 10)){
+	if(currentTask->priority == kernel->currentTask->priority && kernel->currentTask->lastRunTime >= (HAL_GetTick() - 5)){
 		kernel->nextTask = currentTask;		// if current active task is same priority as candidate, switch if active task has overstayed its welcome and queue switch
 		return true;
 	}

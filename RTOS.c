@@ -156,7 +156,7 @@ void OsKill(void){
 void OsDelay(uint32_t ticks){
 	//disableScheduler();
 	TaskHandle task = getCurrentTask();
-	task->delayTime = HAL_GetTick() + ms;
+	task->delayTime = HAL_GetTick() + ticks;
 	task->status = TASK_WAITING;
 	TaskScheduler();
 	//enableScheduler();
