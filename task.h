@@ -28,6 +28,7 @@ typedef struct TaskControlBlock{             	// A pointer to this struct can be
     void ** retval;                          	// Allows a return value pointer to be stored at a location pointed to by retVal.
     void * stackTail;                           // Hold stack tail to free from when deleting a task
     void * stackHead;
+    SemaphoreHandle waitingSemaphore;
     uint32_t delayTime;							// Delay time for OsDelays / Block Timeouts
     bool timeoutOccurred;
     bool suspended;

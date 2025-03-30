@@ -190,12 +190,31 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
     if (!handle)
         return osErrorParameter;                                // if bad semaphore is passed, return with error code
     AtomicInternalStart();
-    if (handle->taskCount == 0){
+    if (handle->taskCount == 0){								// if no tasks are available, release semaphore
 		handle->semaphoreAcquired = false;
 		return osOK;
 		AtomicInternalStop();
     }
-
+    TaskHandle bestCandidate = NULL;
+    for (int i = 1; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
+    	TaskHandle candidate = handle->tasks[i];
+    	if (candidate->suspended || candidate->status == TASK_READY)
+    		continue;											// ignore tasks that have already been released but not run, and suspended tasks
+    	if (bestCandidate == NULL){
+    		bestCandidate = candidate;
+    		continue;
+    	}
+    	if (candidate->priority < bestCandidate->priority)
+    		bestCandidate = candidate;
+    	else if (candidate->priority == bestCandidate->priority && candidate->lastRunTime <= bestCandidate->lastRunTime){
+    		bestCandidate = candidate;
+    	}
+    }
+    if (bestCandidate == NULL){
+    	handle->semaphoreAcquired = false;						// if no tasks are applicable free semaphore until applicable tasks are available
+    }
+    else
+    	bestCandidate->status = TASK_READY;
 	AtomicInternalStop();
     return osOK;
 }
@@ -227,6 +246,7 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		task->lastRunTime = currentTick;
 		task->status = TASK_BLOCKED;
 		task->timeoutOccurred = false;
+		task->waitingSemaphore = handle;			// give task semaphore handle Identifier while waiting
 		TaskScheduler();
 		setPendSV();
 		AtomicInternalStop();
@@ -241,6 +261,7 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		for (; i < handle->taskCount; i++){			// continues looping
 			handle->tasks[i-1] = handle->tasks[i];	// shifts other tasks over
 		}
+		task->waitingSemaphore = NULL;				// remove semaphore identifier once acquired or timeout ends
 		handle->tasks = realloc(handle->tasks, sizeof(TaskHandle) * (--handle->taskCount));	// frees extra memory from removed task
 		AtomicInternalStop();
 		if (task->timeoutOccurred){					// return with timeout error if wait times out
