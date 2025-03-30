@@ -36,8 +36,11 @@ void SysTick_Init(uint32_t ticksPerSec);
 void SysTick_Restore(void);
 
 void PendSV_Init(void);
-
 void setPendSV(void);
+void AtomicInternalStart(void);
+void AtomicInternalStop(void);
+
+
 #endif
 
 #endif

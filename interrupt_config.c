@@ -75,6 +75,22 @@ AtomicStatus AtomicStop(void){
 	return ATOMIC_OK;
 }
 
+static uint32_t internalPrevBasePri;
+
+
+// Internal versions of AtomicStart and AtomicStop; designed to not interfere with user-versions
+
+void AtomicInternalStart(void){
+	uint32_t tempprevBasePri = __get_BASEPRI();
+	__set_BASEPRI(ATOMIC_BLOCK_TASK_SCHEDULER);
+	internalPrevBasePri = tempprevBasePri;
+	return;
+}
+void AtomicInternalStop(void){
+	__set_BASEPRI(internalPrevBasePri);
+	return;
+}
+
 //AtomicStatus AtomicStart(AtomicBlockLevel level) {
 //    uint32_t tempprevBasePri = __get_BASEPRI(); // Save current BASEPRI
 //    __set_BASEPRI(level); // Disable PendSV and possibly other low-priority interrupts
