@@ -24,7 +24,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     if (stackSize < 16){			// Stack should be at LEAST 16 words large (64 bytes, bare-minimum)
     	return NULL;
     }
-	TaskHandle handle = malloc(sizeof(TaskControlBlock));
+	TaskHandle handle = calloc(1, sizeof(TaskControlBlock));
     char * stack; // cast to char for pointer arithmetic
     if (handle == NULL)
         return NULL;        // Allocation failed returns NULL
@@ -40,6 +40,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     }
     handle->lastRunTime = 0;						// set to zero for now, may set to uwtick later
     handle->stackTail = stack;						// stack tail saved for cleanup (needs to be freed when task is removed)
+    handle->stackHead = (void*) ((uint32_t) stack + (stackSize * 4) + 4);
     handle->retval = retVal;						// sets location to store return value
     // these values need to be initialized so when a context switch occurs, these values start the task properly for the first time.
     handle->contextBuffer.r0 = (uint32_t) args;			// Store args as parameter 1 in r0
@@ -154,15 +155,15 @@ void OsKill(void){
 }
 
 void OsDelay(uint32_t ticks){
-	//disableScheduler();
-	uint32_t Systicks = HAL_GetTick();
+	AtomicInternalStart();
+	uint32_t currentTick = HAL_GetTick();
 	TaskHandle task = getCurrentTask();
-	task->delayTime = Systicks + ticks;
+	task->delayTime = currentTick + ticks;
+	task->lastRunTime = currentTick;
 	task->status = TASK_WAITING;
-	task->lastRunTime = Systicks;
 	TaskScheduler();
-	//enableScheduler();
 	setPendSV();
+	AtomicInternalStop();
 	while (task->status != TASK_READY);
 	return;
 }
@@ -178,7 +179,7 @@ SemaphoreHandle createBinarySemaphore(bool acquiredState){      // Returns handl
     if (!handle){
         return NULL;                                            // Returns NULL if fails to create semaphore
     }
-    handle->semaphoreState = (acquiredState) ? 1 : 0;
+    handle->semaphoreAcquired = acquiredState;
     handle->taskCount = 0;
     handle->tasks = NULL;
     return handle;
@@ -188,25 +189,65 @@ SemaphoreHandle createBinarySemaphore(bool acquiredState){      // Returns handl
 OS_Status SemaphoreRelease(SemaphoreHandle handle){
     if (!handle)
         return osErrorParameter;                                // if bad semaphore is passed, return with error code
-    handle->semaphoreState = 0;
+    AtomicInternalStart();
+    if (handle->taskCount == 0){
+		handle->semaphoreAcquired = false;
+		return osOK;
+		AtomicInternalStop();
+    }
+
+	AtomicInternalStop();
     return osOK;
 }
 
+
+
 OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
-    //TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
-    if (!handle)
+    AtomicInternalStart();									// begin uninterrupted section (interrupts are okay, just no context switching)
+    TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
+    uint32_t currentTick = HAL_GetTick();
+    if (!handle){
+    	AtomicInternalStop();
         return osErrorParameter;                            // if bad semaphore is passed, return with error code
-    if (!handle->semaphoreState){                           // if semaphore is free, check for other tasks already on queue, and execute if none available
-//        if (handle->taskQueue.qHead == NULL){
-//            handle->semaphoreState = 1;
-//            return osOK;
-//        }
-//        else{
-//            // QueuePush(task);
-//            // TODO: halt task [without suspending] (ie put task to sleep until semaphire is released, and acquired by this task)
-//        }
     }
-    // TODO: Implement Semaphore Acquire Logic
+    if (!handle->semaphoreAcquired){                        // if semaphore is free, check for other tasks already on queue
+		handle->semaphoreAcquired = true;
+		AtomicInternalStop();
+		return osOK;
+    }
+    else{
+    	TaskHandle * tasksTemp = realloc(handle->tasks, sizeof(TaskHandle) * (handle->taskCount  + 1));
+		if (tasksTemp == NULL){
+			AtomicInternalStop();
+			return osErrorAllocationFailure;
+		}
+		handle->tasks = tasksTemp;
+		handle->tasks[handle->taskCount++] = task;
+		task->delayTime = currentTick + timeout;
+		task->lastRunTime = currentTick;
+		task->status = TASK_BLOCKED;
+		task->timeoutOccurred = false;
+		TaskScheduler();
+		setPendSV();
+		AtomicInternalStop();
+		while (task->status != TASK_READY);			// halt indefinitely until task switch occurs and/or task becomes ready
+		AtomicInternalStart();
+		int i = 0;
+		for (int i = 0; i < handle->taskCount; i++){
+			if (handle->tasks[i] == task)
+				break;								// finds current task to remove from tasks waiting on semaphore
+		}
+		i++;
+		for (; i < handle->taskCount; i++){			// continues looping
+			handle->tasks[i-1] = handle->tasks[i];	// shifts other tasks over
+		}
+		handle->tasks = realloc(handle->tasks, sizeof(TaskHandle) * (--handle->taskCount));	// frees extra memory from removed task
+		AtomicInternalStop();
+		if (task->timeoutOccurred){					// return with timeout error if wait times out
+			return osErrorTimeout;
+		}
+
+    }
     return osOK;
 }
 

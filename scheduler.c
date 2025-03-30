@@ -17,16 +17,20 @@ bool TaskScheduler(void) { // Returns true if new task has been found; false if 
     for (uint32_t i = 0; i < kernel->taskCount; i++) {
         TaskHandle candidate = kernel->tasks[i];
 
-        if (!candidate->suspended) {
-            if (candidate->status == TASK_WAITING && currentTick >= candidate->delayTime) {
-                candidate->status = TASK_READY;
-            }
+        if (candidate->suspended) {		// Don't bother even considering the task if it's suspended
+        	continue;
         }
+
+        if ((candidate->status == TASK_WAITING || candidate->status == TASK_BLOCKED)		// If task is waiting/blocked, unblocks tasks once timeout is done
+                    						   && currentTick >= candidate->delayTime) {
+			candidate->timeoutOccurred = true;
+			candidate->status = TASK_READY;
+		}
 
         if (candidate == currentTask) // Don't bother checking current task
             continue;
 
-        if (!candidate->suspended && candidate->status == TASK_READY) { // Only consider tasks that aren't suspended and are flagged "Ready"
+        if (candidate->status == TASK_READY) { // Only consider tasks that aren't suspended and are flagged "Ready"
             if (candidate->priority < bestCandidate->priority) {
                 bestCandidate = candidate; // If a task isn't blocked, and is higher priority, it unquestionably becomes most likely candidate
             } else if (candidate->priority == bestCandidate->priority && candidate->lastRunTime <= bestCandidate->lastRunTime) {
