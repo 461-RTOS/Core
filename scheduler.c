@@ -22,7 +22,7 @@ bool TaskScheduler(void) { // Returns true if new task has been found; false if 
         }
 
         if ((candidate->status == TASK_WAITING || candidate->status == TASK_BLOCKED)		// If task is waiting/blocked, unblocks tasks once timeout is done
-                    						   && currentTick >= candidate->delayTime) {
+                    						   && currentTick == candidate->delayTime) {
 			candidate->timeoutOccurred = true;
 			candidate->status = TASK_READY;
 		}

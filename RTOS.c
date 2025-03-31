@@ -162,8 +162,8 @@ void OsDelay(uint32_t ticks){
 	task->lastRunTime = currentTick;
 	task->status = TASK_WAITING;
 	TaskScheduler();
-	setPendSV();
 	AtomicInternalStop();
+	setPendSV();
 	while (task->status != TASK_READY);
 	return;
 }
@@ -174,7 +174,7 @@ SEMAPHORE FUNCTIONS
 
 
 
-SemaphoreHandle createBinarySemaphore(bool acquiredState){      // Returns handle to semaphore. acquiredState: true == acquired, false == released
+SemaphoreHandle createBinarySemaphore(SemaphoreAcquiredState acquiredState){      // Returns handle to semaphore. acquiredState: true == acquired, false == released
 	SemaphoreHandle handle = malloc(sizeof(SemaphoreContext));
     if (!handle){
         return NULL;                                            // Returns NULL if fails to create semaphore
@@ -192,11 +192,11 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
     AtomicInternalStart();
     if (handle->taskCount == 0){								// if no tasks are available, release semaphore
 		handle->semaphoreAcquired = false;
-		return osOK;
 		AtomicInternalStop();
+		return osOK;
     }
     TaskHandle bestCandidate = NULL;
-    for (int i = 1; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
+    for (int i = 0; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
     	TaskHandle candidate = handle->tasks[i];
     	if (candidate->suspended || candidate->status == TASK_READY)
     		continue;											// ignore tasks that have already been released but not run, and suspended tasks
@@ -210,11 +210,11 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
     		bestCandidate = candidate;
     	}
     }
-    if (bestCandidate == NULL){
-    	handle->semaphoreAcquired = false;						// if no tasks are applicable free semaphore until applicable tasks are available
-    }
-    else
+    if (bestCandidate == NULL)
+    	handle->semaphoreAcquired = false;						// if no tasks are applicable (all are suspended) free semaphore until applicable tasks are available
+    else{
     	bestCandidate->status = TASK_READY;
+    }
 	AtomicInternalStop();
     return osOK;
 }
@@ -242,18 +242,19 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		}
 		handle->tasks = tasksTemp;
 		handle->tasks[handle->taskCount++] = task;
+//		if (currentTick - timeout < currentTick)
 		task->delayTime = currentTick + timeout;
 		task->lastRunTime = currentTick;
 		task->status = TASK_BLOCKED;
 		task->timeoutOccurred = false;
 		task->waitingSemaphore = handle;			// give task semaphore handle Identifier while waiting
 		TaskScheduler();
-		setPendSV();
 		AtomicInternalStop();
+		setPendSV();
 		while (task->status != TASK_READY);			// halt indefinitely until task switch occurs and/or task becomes ready
 		AtomicInternalStart();
 		int i = 0;
-		for (int i = 0; i < handle->taskCount; i++){
+		for (i = 0; i < handle->taskCount; i++){
 			if (handle->tasks[i] == task)
 				break;								// finds current task to remove from tasks waiting on semaphore
 		}
@@ -263,6 +264,7 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		}
 		task->waitingSemaphore = NULL;				// remove semaphore identifier once acquired or timeout ends
 		handle->tasks = realloc(handle->tasks, sizeof(TaskHandle) * (--handle->taskCount));	// frees extra memory from removed task
+		handle->semaphoreAcquired = true;
 		AtomicInternalStop();
 		if (task->timeoutOccurred){					// return with timeout error if wait times out
 			return osErrorTimeout;

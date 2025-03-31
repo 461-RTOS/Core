@@ -49,6 +49,10 @@ typedef enum TaskPriority{
 	PRIORITY_IDLE = 0xFF
 }TaskPriority;
 
+typedef bool SemaphoreAcquiredState;
+#define SEMAPHORE_STATE_ACQUIRED true
+#define SEMAPHORE_STATE_RELEASED false
+
 /*A simple typedef for Task Function Pointers:
 Task functions must take a void pointer as an argument,
 and return a void pointer as well. can return NULL if return value is not used*/
@@ -133,7 +137,7 @@ SEMAPHORE FUNCTIONS
 *********************************************************************************************************/
 
 
-SemaphoreHandle createBinarySemaphore(bool acquiredState);
+SemaphoreHandle createBinarySemaphore(SemaphoreAcquiredState acquiredState);
 
 OS_Status SemaphoreRelease(SemaphoreHandle handle);
 
