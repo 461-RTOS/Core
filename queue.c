@@ -22,27 +22,28 @@ int comparePriority(const void * a, const void * b){
 }
 /** Function Initializing the task Queue **/
 QueuePointers* taskQueueInit(TaskHandle* tasks){
+    QueuePointers* taskQueue = malloc(sizeof(QueuePointers));
     int taskCount = kernel->taskCount; //sets a variable for the number of tasks
     qsort(tasks, taskCount, sizeof(TaskHandle), comparePriority);// calling qsort to sort the array		// Changed arg3 from 8 to sizeof(TaskHandle) NEVER USE A CONSTANT FOR A SIZE - Use sizeof(instead), (especially because the size of a pointer on our platform is 4 not 8)
     for (int i=0; i==taskCount;i++){
-        if (Queue.qHead == NULL){
-            queuePush(tasks[i]); //check for a NULL head
+        if (taskQueue->qHead == NULL){
+            queuePush(tasks[i],taskQueue); //check for a NULL head
         }
         else{
             QueueObject* nextNode = malloc(sizeof(QueueObject));// setting aside memeory and then placing elements into the queue
             nextNode->data = tasks[i];
             nextNode->next = NULL;
-            Queue.qTail->next = nextNode;
-            Queue.qTail = nextNode;
+            taskQueue->qTail->next = nextNode;
+            taskQueue->qTail = nextNode;
         }
         i++;
     }
-    return NULL;												// Honestly, I'm not sure what you are doing here, but your function is set up to return
-}																// something, but it isn't returning anything. I can't guaruntee your function works,
-																// but I'm having it return NULL until that is figured out, in order to avoid warnings
-
-bool isQueueEmpty(void){ //for user use, returns a bool to check if the queue is empty
-    if (Queue.qHead == NULL && Queue.qTail == NULL){
+    //QueuePointers taskQueue  = Queue;
+    return taskQueue;
+}
+												
+bool isQueueEmpty(QueuePointers* userQueue){ //for user use, returns a bool to check if the queue is empty
+    if (userQueue->qHead == NULL && userQueue->qTail == NULL){
         return true;
     }
     else{
@@ -50,9 +51,9 @@ bool isQueueEmpty(void){ //for user use, returns a bool to check if the queue is
     }
 }
 
-int queueSize(void){ //for user use, returns an int of the number of queue items
-    QueueObject* iterative = Queue.qHead;
-    int size =0;
+int queueSize(QueuePointers * userQueue){ //for user use, returns an int of the number of queue items
+    QueueObject* iterative = userQueue->qHead;
+    unsigned int size =0;
     while (iterative != NULL){
         size++;
         iterative = iterative->next;
@@ -60,31 +61,31 @@ int queueSize(void){ //for user use, returns an int of the number of queue items
     return size;
 }
 
-void * queuePeek(void){ //for user use, returns qHead
-    return Queue.qHead;
+void * queuePeek(QueuePointers* userQueue){ //for user use, returns qHead
+    return userQueue->qHead;
 }
 
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
-void * queuePop(void){
-	if (Queue.qHead == NULL)
+void * queuePop(QueuePointers* userQueue){
+	if (userQueue->qHead == NULL)
 		return NULL;
     void * data = Queue.qHead->data;
-    if (Queue.qHead == Queue.qTail){
-    	free(Queue.qHead);
-    	Queue.qHead = NULL;
-    	Queue.qTail = NULL;
+    if (userQueue->qHead == Queue.qTail){
+    	free(userQueue->qHead);
+    	userQueue->qHead = NULL;
+    	userQueue->qTail = NULL;
     }
     else{
-		QueueObject * oldHead = Queue.qHead;
-		QueueObject *newHead = Queue.qHead->next;
-		Queue.qHead = newHead;
+		QueueObject * oldHead = userQueue->qHead;
+		QueueObject *newHead = userQueue->qHead->next;
+		userQueue->qHead = newHead;
 		free(oldHead);
     }
     return data;
 };
 
 /*creates new QueueObjects from given tasks then pushes onto queue from tail*/
-void queuePush(void * data){
+void queuePush(void * data, QueuePointers* userQueue){
     QueueObject* nextNode = malloc(sizeof(QueueObject));
     if(!nextNode){
         return;
@@ -92,12 +93,12 @@ void queuePush(void * data){
     nextNode->data = data;
     nextNode->next = NULL;
     //nextNode->prev = Queue.qTail; //might need a NULL check here.
-    Queue.qTail = nextNode;
+    userQueue->qTail = nextNode;
     //this is simple enough for now but needs to be updated with new scheduling logic
-    if (Queue.qTail == NULL){
-    	Queue.qTail = nextNode;
-    	Queue.qHead = nextNode;
+    if (userQueue->qTail == NULL){
+    	userQueue->qTail = nextNode;
+    	userQueue->qHead = nextNode;
     	return;
     }
-    Queue.qTail= Queue.qTail->next = nextNode;       // adds task to tail of queue
+    userQueue->qTail= userQueue->qTail->next = nextNode;       // adds task to tail of queue
 }
