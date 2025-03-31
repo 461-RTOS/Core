@@ -41,7 +41,7 @@ QueuePointers* taskQueueInit(TaskHandle* tasks){
     //QueuePointers taskQueue  = Queue;
     return taskQueue;
 }
-												
+
 bool isQueueEmpty(QueuePointers* userQueue){ //for user use, returns a bool to check if the queue is empty
     if (userQueue->qHead == NULL && userQueue->qTail == NULL){
         return true;
@@ -51,7 +51,7 @@ bool isQueueEmpty(QueuePointers* userQueue){ //for user use, returns a bool to c
     }
 }
 
-int queueSize(QueuePointers * userQueue){ //for user use, returns an int of the number of queue items
+unsigned int queueSize(QueuePointers * userQueue){ //for user use, returns an int of the number of queue items
     QueueObject* iterative = userQueue->qHead;
     unsigned int size =0;
     while (iterative != NULL){
