@@ -1,3 +1,4 @@
+#define RTOS__INTERNAL_
 #include <stdlib.h>
 #include "task.h"
 #include "queue.h"
@@ -43,12 +44,14 @@ bool appendTasktoKernel(TaskHandle task){			// adds completed task initializatio
     if (kernel == NULL){
     	return false;
     }
+    AtomicInternalStart();
 	TaskHandle * newTaskList = realloc(kernel->tasks, sizeof(TaskHandle) * (kernel->taskCount + 1));
     if (newTaskList == NULL){
         return false;
     }
     kernel->tasks = newTaskList;
     kernel->tasks[kernel->taskCount++] = task;
+    AtomicInternalStop();
     return true;
 }
 

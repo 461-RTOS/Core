@@ -123,7 +123,7 @@ OS_Status OsStart(void){
 		return osErrorUninitialized;
 	}
 	TaskProperties properties = {PRIORITY_IDLE, 0x00, false};
-	TaskHandle idleTask = CreateTask(idleProcInitializer, 128, NULL, NULL, properties);
+	TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);
 	if (idleTask == NULL){
 		return	osErrorAllocationFailure;
 	}
