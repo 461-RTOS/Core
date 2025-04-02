@@ -4,6 +4,9 @@
 #include "queue.h"
 
 static QueuePointers Queue;
+/*********************************************************************************************/
+/*           Queue data structure for both internal RTOS use and external User use.          */
+/*********************************************************************************************/
 
 
 /** Following function is needed for qsort to sort our array of tasks*/
@@ -20,6 +23,7 @@ int comparePriority(const void * a, const void * b){
         return 0;
     }
 }
+
 /** Function Initializing the task Queue **/
 QueuePointers* taskQueueInit(TaskHandle* tasks){
     QueuePointers* taskQueue = malloc(sizeof(QueuePointers));
@@ -42,7 +46,8 @@ QueuePointers* taskQueueInit(TaskHandle* tasks){
     return taskQueue;
 }
 
-bool isQueueEmpty(QueuePointers* userQueue){ //for user use, returns a bool to check if the queue is empty
+/** Function to check if queue is empty. Returns boolean value **/
+bool isQueueEmpty(QueuePointers* userQueue){
     if (userQueue->qHead == NULL && userQueue->qTail == NULL){
         return true;
     }
@@ -51,7 +56,8 @@ bool isQueueEmpty(QueuePointers* userQueue){ //for user use, returns a bool to c
     }
 }
 
-unsigned int queueSize(QueuePointers * userQueue){ //for user use, returns an int of the number of queue items
+/** Function that returns an unsigned 32 bit integer equal to the size of the queue. **/
+unsigned int queueSize(QueuePointers * userQueue){
     QueueObject* iterative = userQueue->qHead;
     unsigned int size =0;
     while (iterative != NULL){
@@ -61,6 +67,7 @@ unsigned int queueSize(QueuePointers * userQueue){ //for user use, returns an in
     return size;
 }
 
+/** Function that returns queue head without removing the head **/
 void * queuePeek(QueuePointers* userQueue){ //for user use, returns qHead
     return userQueue->qHead;
 }
@@ -69,6 +76,7 @@ void * queuePeek(QueuePointers* userQueue){ //for user use, returns qHead
 void * queuePop(QueuePointers* userQueue){
 	if (userQueue->qHead == NULL)
 		return NULL;
+    AtomicInternalStart();
     void * data = Queue.qHead->data;
     if (userQueue->qHead == Queue.qTail){
     	free(userQueue->qHead);
@@ -81,18 +89,19 @@ void * queuePop(QueuePointers* userQueue){
 		userQueue->qHead = newHead;
 		free(oldHead);
     }
+    AtomicInternalStop();
     return data;
 };
 
 /*creates new QueueObjects from given tasks then pushes onto queue from tail*/
 void queuePush(void * data, QueuePointers* userQueue){
+    AtomicInternalStart();
     QueueObject* nextNode = malloc(sizeof(QueueObject));
     if(!nextNode){
         return;
     }
     nextNode->data = data;
     nextNode->next = NULL;
-    //nextNode->prev = Queue.qTail; //might need a NULL check here.
     userQueue->qTail = nextNode;
     //this is simple enough for now but needs to be updated with new scheduling logic
     if (userQueue->qTail == NULL){
@@ -101,4 +110,5 @@ void queuePush(void * data, QueuePointers* userQueue){
     	return;
     }
     userQueue->qTail= userQueue->qTail->next = nextNode;       // adds task to tail of queue
+    AtomicInternalStop();
 }
