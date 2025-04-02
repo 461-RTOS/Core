@@ -199,7 +199,7 @@ Lastly, Stack allocation allocates 1 word more than the requested stack size.
 
 The following formula indicates the minimum memory allocation of a successful task creation in bytes, where $x$ represents the number of words to allocate stack size:
 
-$ s(x) = 108 + 4x + 4 $
+$` s(x) = 108 + 4x + 4 `$
 
 ### OsStart
 
