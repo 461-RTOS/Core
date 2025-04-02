@@ -213,7 +213,7 @@ When the 104 bytes are allocated for the Idle Task's Task Control Block, we also
 
 ```C
     TaskProperties properties = {PRIORITY_IDLE, 0x00, false};
-	TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);
+    TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);
 ```
 
 As noted in the `CreateTask` section, an additional 4 bytes of stack space are allocated, for a 33-word allocation. The total memory allocation of 240 bytes. Note that the 4 byte allocation to add the task to the Kernel's task list can still lead to more fragmentation until addressed in future revisions.
