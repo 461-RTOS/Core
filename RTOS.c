@@ -105,10 +105,10 @@ void DeleteTask(TaskHandle handle){
 *   Will recieve timer, just using int as placeholder
 *********************************************************************************/
 OS_Status OsInitialize(uint32_t ticksPerSec){
-    kernel = calloc(1, sizeof(TaskControlBlock));		// Kernel values should be initialized to 0
 	if (ticksPerSec == 0){
 		return osErrorParameter;	// cannot divide by 0, do not set tick
 	}
+    kernel = calloc(1, sizeof(Kernel));		// Kernel values should be initialized to 0
     if (kernel == NULL){
     	return osErrorResource;
     }
