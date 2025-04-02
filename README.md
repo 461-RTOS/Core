@@ -22,5 +22,7 @@ Many of the functions in this library may rely on heap memory, so the programmer
 - [OsInitialize](Documentation/Functions/OsInitialize.md)
 - [CreateTask](Documentation/Functions/CreateTask.md)
 - [OsStart and OsStop](Documentation/Functions/OsStart.md)
+- [OsDelay](Documentation/Functions/OsDelay.md)
+- [Semaphore Functions](Documentation/Functions/Semaphores.md)
 
 
