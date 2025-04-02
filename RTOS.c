@@ -177,7 +177,7 @@ SEMAPHORE FUNCTIONS
 
 
 
-SemaphoreHandle createBinarySemaphore(SemaphoreAcquiredState acquiredState){      // Returns handle to semaphore. acquiredState: true == acquired, false == released
+SemaphoreHandle CreateBinarySemaphore(SemaphoreAcquiredState acquiredState){      // Returns handle to semaphore. acquiredState: true == acquired, false == released
 	SemaphoreHandle handle = malloc(sizeof(SemaphoreContext));
     if (!handle){
         return NULL;                                            // Returns NULL if fails to create semaphore

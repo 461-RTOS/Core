@@ -139,7 +139,7 @@ SEMAPHORE FUNCTIONS
 *********************************************************************************************************/
 
 
-SemaphoreHandle createBinarySemaphore(SemaphoreAcquiredState acquiredState);
+SemaphoreHandle CreateBinarySemaphore(SemaphoreAcquiredState acquiredState);
 
 OS_Status SemaphoreRelease(SemaphoreHandle handle);
 
