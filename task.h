@@ -30,10 +30,10 @@ typedef struct TaskControlBlock{             	// A pointer to this struct can be
     void * stackHead;
     SemaphoreHandle waitingSemaphore;
     uint32_t delayTime;							// Delay time for OsDelays / Block Timeouts
+    TaskStatus status;
     bool timeoutOccurred;
     bool suspended;
     uint8_t priority;
-    TaskStatus status;
 }TaskControlBlock;
 
 // The Kernel structure will be used to locate currently active tasks, as well as choose which task to run when context switching
