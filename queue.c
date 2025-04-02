@@ -1,3 +1,4 @@
+#define RTOS__INTERNAL_
 #include <stdlib.h>
 #include "task.h"
 #include "RTOS.h"
@@ -75,9 +76,10 @@ void * queuePeek(QueuePointers* userQueue){ //for user use, returns qHead
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
 void * queuePop(QueuePointers* userQueue){
     AtomicInternalStart();
-	if (userQueue->qHead == NULL)
+	if (userQueue->qHead == NULL){
 		AtomicInternalStop();
 		return NULL;
+	}
     void * data = Queue.qHead->data;
     if (userQueue->qHead == Queue.qTail){
     	free(userQueue->qHead);
