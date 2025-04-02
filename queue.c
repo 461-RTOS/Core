@@ -74,9 +74,10 @@ void * queuePeek(QueuePointers* userQueue){ //for user use, returns qHead
 
 /*Pops off queue heads and returns data. Sets the next Object as the new Head*/
 void * queuePop(QueuePointers* userQueue){
-	if (userQueue->qHead == NULL)
-		return NULL;
     AtomicInternalStart();
+	if (userQueue->qHead == NULL)
+		AtomicInternalStop();
+		return NULL;
     void * data = Queue.qHead->data;
     if (userQueue->qHead == Queue.qTail){
     	free(userQueue->qHead);
@@ -98,6 +99,7 @@ void queuePush(void * data, QueuePointers* userQueue){
     AtomicInternalStart();
     QueueObject* nextNode = malloc(sizeof(QueueObject));
     if(!nextNode){
+    	AtomicInternalStop();
         return;
     }
     nextNode->data = data;
@@ -107,6 +109,7 @@ void queuePush(void * data, QueuePointers* userQueue){
     if (userQueue->qTail == NULL){
     	userQueue->qTail = nextNode;
     	userQueue->qHead = nextNode;
+    	AtomicInternalStop();
     	return;
     }
     userQueue->qTail= userQueue->qTail->next = nextNode;       // adds task to tail of queue
