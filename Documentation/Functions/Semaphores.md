@@ -56,7 +56,7 @@ Releasing a semaphore makes it available for a task to acquire it. If no tasks a
 
 The handle of a created semaphore can be used to identify the semaphore that should be released.
 
-### Return Value
+### Return Value: OS_Status
 
 `SemaphoreRelease` returns an `OS_Status` Signal of one of three values:
 
@@ -68,8 +68,36 @@ The handle of a created semaphore can be used to identify the semaphore that sho
 
 ## SemaphoreAcquire
 
-`SemaphoreAcquire` takes a `SemaphoreHandle` as a parameter, and returns an OS_Status signal:
+Calling `SemaphoreAcquire` causes a task to attempt to acquire the semaphore whose handle was passed as an argument. If the semaphore is not available, then the task is added to a list of tasks waiting for the semaphore to become available, and is marked as `Blocked`. If the semaphore times out, the task will continue without acquiring the semaphore
+
+`SemaphoreAcquire` takes a `SemaphoreHandle`, and an unsigned 32-bit integer as parameters, and returns an OS_Status signal:
 
 ```C
-    OS_Status SemaphoreRelease(SemaphoreHandle handle);
+    OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout);
 ```
+
+### Argument 1: Semaphore Handle
+
+A `SemaphoreHandle` is passed as the first argument to the function to identify which semaphore should be acquired.
+
+
+### Argument 2: Timeout
+
+The second argument represents the number of ticks that should pass before a timeout occurs for waiting too long and the task resumes operation.
+
+### Return Value: OS_Status
+
+The `SemaphoreAcquire` function can return 4 signals from OS_Status:
+
+- `osOK` - Semaphore successfully acquired
+- `osErrorParameter` - A NULL semaphore handle was passed
+- `osErrorAllocationFailure` - Failure to allocate memory for Semaphore Task List
+- `osErrorTimeout` - Timeout Occurred before semaphore was acquired
+
+### Memory Allocation
+
+Allocates 1 additional word (4 bytes) to the list of tasks attempting to acquire a semaphore. This memory is deallocated from semaphore list as soon as the task acquires it, or times out, but for the duration of the task sleeping, the space remains allocated.
+
+Note: Much like the task list in the kernel, a semaphore has its own task list which must grow and shrink with tasks using the semaphore, if a contiguous block of appropriate size is not available at the current address, the location for the references is moved to a space with a free block. This can cause memory fragmentation.
+
+Future implementatiions may address this fragmentation, and allocate larger blocks initially to minimize fragmentation.
