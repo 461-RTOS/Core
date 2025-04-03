@@ -3,7 +3,9 @@
 
 The `OsStart` function hands control to the kernel, allowing the task scheduler to flag the context switcher to run when needed.
 
-`OsStart` takes no parameters, but it does create a default task, which is used as the entry-point to the kernel.
+`OsStart` takes no parameters, and returns an OS_Status signal.
+
+Additionally, it creates a default task, which is used as the entry-point to the kernel.
 
 ```C
     OS_Status OsStart(void);
