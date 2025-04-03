@@ -29,6 +29,7 @@ typedef struct TaskControlBlock{             	// A pointer to this struct can be
     void * stackTail;                           // Hold stack tail to free from when deleting a task
     void * stackHead;
     SemaphoreHandle waitingSemaphore;
+    MutexHandle waitingMutex;
     uint32_t delayTime;							// Delay time for OsDelays / Block Timeouts
     TaskStatus status;
     bool timeoutOccurred;

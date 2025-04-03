@@ -16,6 +16,7 @@ typedef void* TaskHandle;
 
 #ifndef SEMAPHORE_H_
 typedef void * SemaphoreHandle;
+typedef void * MutexHandle;
 #endif
 
 /*Task Properties are defined as mutable, user-accessible properties*/
@@ -35,7 +36,8 @@ typedef enum OS_Status{
     osErrorParameter,               // Error: Bad Parameter passed (such as NULL)
     osErrorISR,                     // Error: called from an ISR without timeout == 0
 	osErrorUninitialized,			// Error: RTOS Kernel is not currently initialized
-	osErrorAllocationFailure		// Error: failure to allocate resource memory
+	osErrorAllocationFailure,		// Error: failure to allocate resource memory
+	osOwnershipFailure				// Error: task does not own current resource
 }OS_Status;
 
 typedef enum OS_Status OS_Status;
@@ -145,5 +147,13 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle);
 
 OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout);
 
+/*********************************************************************************************************
+MUTEX FUNCTIONS
+*********************************************************************************************************/
 
+MutexHandle CreateMutex(void);
+
+OS_Status MutexRelease(MutexHandle handle);
+
+OS_Status MutexAcquire(MutexHandle handle, uint32_t timeout);
 #endif

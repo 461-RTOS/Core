@@ -193,11 +193,15 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
     if (!handle)
         return osErrorParameter;                                // if bad semaphore is passed, return with error code
     AtomicInternalStart();
-    if (handle->taskCount == 0){								// if no tasks are available, release semaphore
-		handle->semaphoreAcquired = false;
+    if (handle->semaphoreAcquired == false){								// if no tasks are available, release semaphore
 		AtomicInternalStop();
 		return osErrorResource;									// Resource Unavailable Error returned if semaphore already released
     }
+    if (handle->taskCount == 0){								// if no tasks are available, release mutex
+   		handle->semaphoreAcquired = false;
+   		AtomicInternalStop();
+   		return osOK;
+       }
     TaskHandle bestCandidate = NULL;
     for (int i = 0; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
     	TaskHandle candidate = handle->tasks[i];
@@ -245,7 +249,6 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		}
 		handle->tasks = tasksTemp;
 		handle->tasks[handle->taskCount++] = task;
-//		if (currentTick - timeout < currentTick)
 		task->delayTime = currentTick + timeout;
 		task->lastRunTime = currentTick;
 		task->status = TASK_BLOCKED;
@@ -267,15 +270,129 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
 		}
 		task->waitingSemaphore = NULL;				// remove semaphore identifier once acquired or timeout ends
 		handle->tasks = realloc(handle->tasks, sizeof(TaskHandle) * (--handle->taskCount));	// frees extra memory from removed task
-		handle->semaphoreAcquired = true;
-		AtomicInternalStop();
+
 		if (task->timeoutOccurred){					// return with timeout error if wait times out
+			AtomicInternalStop();
 			return osErrorTimeout;
 		}
+		handle->semaphoreAcquired = true;
+		AtomicInternalStop();
 
     }
     return osOK;
 }
+
+MutexHandle CreateMutex(void){      // Returns handle to mutex
+	MutexHandle handle = malloc(sizeof(MutexContext));
+    if (!handle){
+        return NULL;                                            // Returns NULL if fails to create mutex
+    }
+
+    handle->Acquired = false;
+    handle->taskCount = 0;
+    handle->tasks = NULL;
+    handle->currentTask = NULL;
+    return handle;
+}
+
+
+OS_Status MutexRelease(MutexHandle handle){
+    if (!handle)
+        return osErrorParameter;                                // if bad mutex is passed, return with error code
+    AtomicInternalStart();
+    if (handle->Acquired == false){								// if not acquired, return error
+		AtomicInternalStop();
+		return osErrorResource;									// Resource Unavailable Error returned if mutex already released
+    }
+    TaskHandle task = getCurrentTask();
+    if (handle->currentTask != task){
+    	return osOwnershipFailure;
+    }
+    if (handle->taskCount == 0){								// if no tasks are available, release mutex
+		handle->Acquired = false;
+		AtomicInternalStop();
+		return osOK;
+    }
+    TaskHandle bestCandidate = NULL;
+    for (int i = 0; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
+    	TaskHandle candidate = handle->tasks[i];
+    	if (candidate->suspended || candidate->status == TASK_READY)
+    		continue;											// ignore tasks that have already been released but not run, and suspended tasks
+    	if (bestCandidate == NULL){
+    		bestCandidate = candidate;
+    		continue;
+    	}
+    	if (candidate->priority < bestCandidate->priority)
+    		bestCandidate = candidate;
+    	else if (candidate->priority == bestCandidate->priority && candidate->lastRunTime <= bestCandidate->lastRunTime){
+    		bestCandidate = candidate;
+    	}
+    }
+    if (bestCandidate == NULL)
+    	handle->Acquired = false;						// if no tasks are applicable (all are suspended) free mutex until applicable tasks are available
+    else{
+    	bestCandidate->status = TASK_READY;
+    }
+	AtomicInternalStop();
+    return osOK;
+}
+
+
+
+OS_Status MutexAcquire(MutexHandle handle, uint32_t timeout){
+    AtomicInternalStart();									// begin uninterrupted section (interrupts are okay, just no context switching)
+    TaskHandle task = getCurrentTask();                                // Current task is acquired in order to add to queue
+    uint32_t currentTick = HAL_GetTick();
+    if (!handle){
+    	AtomicInternalStop();
+        return osErrorParameter;                            // if bad Mutex is passed, return with error code
+    }
+    if (!handle->Acquired){                        // if Mutex is free, check for other tasks already on queue
+		handle->Acquired = true;
+		handle->currentTask = task;
+		AtomicInternalStop();
+		return osOK;
+    }
+    else{
+    	TaskHandle * tasksTemp = realloc(handle->tasks, sizeof(TaskHandle) * (handle->taskCount  + 1));
+		if (tasksTemp == NULL){
+			AtomicInternalStop();
+			return osErrorAllocationFailure;
+		}
+		handle->tasks = tasksTemp;
+		handle->tasks[handle->taskCount++] = task;
+		task->delayTime = currentTick + timeout;
+		task->lastRunTime = currentTick;
+		task->status = TASK_BLOCKED;
+		task->timeoutOccurred = false;
+		task->waitingMutex = handle;			// give task mutex handle Identifier while waiting
+		TaskScheduler();
+		AtomicInternalStop();
+		setPendSV();
+		while (task->status != TASK_READY);			// halt indefinitely until task switch occurs and/or task becomes ready
+		AtomicInternalStart();
+		int i = 0;
+		for (i = 0; i < handle->taskCount; i++){
+			if (handle->tasks[i] == task)
+				break;								// finds current task to remove from tasks waiting on semaphore
+		}
+		i++;
+		for (; i < handle->taskCount; i++){			// continues looping
+			handle->tasks[i-1] = handle->tasks[i];	// shifts other tasks over
+		}
+		task->waitingMutex = NULL;				// remove mutex identifier once acquired or timeout ends
+		handle->tasks = realloc(handle->tasks, sizeof(TaskHandle) * (--handle->taskCount));	// frees extra memory from removed task
+		if (task->timeoutOccurred){					// return with timeout error if wait times out
+			AtomicInternalStop();
+			return osErrorTimeout;
+		}
+		handle->Acquired = true;
+		handle->currentTask = task;
+		AtomicInternalStop();
+    }
+    return osOK;
+}
+
 
 
 // weak idle process, can be overwritten with a custom one
