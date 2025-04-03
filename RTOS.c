@@ -306,8 +306,10 @@ OS_Status MutexRelease(MutexHandle handle){
     }
     TaskHandle task = getCurrentTask();
     if (handle->currentTask != task){
+    	AtomicInternalStop();
     	return osOwnershipFailure;
     }
+    handle->currentTask = NULL;
     if (handle->taskCount == 0){								// if no tasks are available, release mutex
 		handle->Acquired = false;
 		AtomicInternalStop();
