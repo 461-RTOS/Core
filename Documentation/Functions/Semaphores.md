@@ -1,4 +1,4 @@
-# Semaphoress
+# Semaphores
 
 Binary semaphores are implemented into OURTOS as an effective method for Tasks to be signaled by interrupts, or other tasks. The RTOS provides three main functions for Semaphores.
 
