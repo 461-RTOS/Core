@@ -29,6 +29,23 @@ The `OsStart` function will return one of three values to indicate the success s
 - `osErrorAllocationFailure` - Failed to Allocate memory for idle task; Unable to run RTOS
 - `osErrorUninitialized` - Kernel is not currently Initialized, starting RTOS without a valid kernel is not possible.
 
+An Example of how this function might be implemented:
+
+```C
+    
+    switch (OsStart()){  
+        case osOK:
+            // Handle Successful return
+            break;
+        case osErrorAllocationFailure:
+            // Handle Fail to start due to allocation failure
+            break;
+        case osErrorUninitialized:
+            // Handle Fail to start due to Kernel not initialized
+            break;
+    }
+```
+
 ## OsStop
 
 When a task calls OsStop, the Kernel Returns control to the main process, disabling the task scheduler.
