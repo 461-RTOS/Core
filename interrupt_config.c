@@ -82,7 +82,7 @@ static uint32_t internalPrevBasePri;
 
 void AtomicInternalStart(void){
 	uint32_t tempprevBasePri = __get_BASEPRI();
-	__set_BASEPRI(ATOMIC_BLOCK_TASK_SCHEDULER);
+	__set_BASEPRI(ATOMIC_BLOCK_CONTEXT_SWITCH);
 	internalPrevBasePri = tempprevBasePri;
 	return;
 }
