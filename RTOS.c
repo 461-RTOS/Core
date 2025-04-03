@@ -93,12 +93,12 @@ bool IsTaskSuspended(TaskHandle handle){
     return handle->suspended;
 }
 
-/********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************/
+/********************************************************************************************
+*   Removes a task from system, switches to another task if currently running -
+*    Not Yet Implemented
+*********************************************************************************************/
 void DeleteTask(TaskHandle handle){
-    // This is a generic line comment to give more insight on specific lines
+
 }
 
 /********************************************************************************
@@ -117,16 +117,17 @@ OS_Status OsInitialize(uint32_t ticksPerSec){
 }
 
 void SwitchFromMain(void); // prototype needed for OsStartFunction
-/********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************/
+
+
+/********************************************************************************************
+*  	Hands control to the RTOS Kernel
+*********************************************************************************************/
 OS_Status OsStart(void){
-	if (kernel == NULL){
+	if (kernel == NULL){				// Ensures Kernel is Running
 		return osErrorUninitialized;
 	}
 	TaskProperties properties = {PRIORITY_IDLE, 0x00, false};
-	TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);
+	TaskHandle idleTask = CreateTask(idleProcInitializer, 32, NULL, NULL, properties);	// Creates Idle Task with small stack
 	if (idleTask == NULL){
 		return	osErrorAllocationFailure;
 	}
@@ -138,23 +139,23 @@ OS_Status OsStart(void){
 	return osOK;
 }
 
+
 void SwitchToMain(void);	// Prototype needed for OsStopFunction
-/********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************/
+
+/********************************************************************************************
+*   Halts Kernel Operation
+*********************************************************************************************/
 void OsStop(void){
-    // This is a generic line comment to give more insight on specific lines
+
 	isKernelActive = false;
 	SwitchToMain();
 }
 
-/********************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
-*********************************************************************************/
+/********************************************************************************************
+*	Uninitializes Kernel, cleaning up remaining tasks as well as TCB Not yet implemented
+*********************************************************************************************/
 void OsKill(void){
-    // This is a generic line comment to give more insight on specific lines
+
 }
 
 void OsDelay(uint32_t ticks){
@@ -282,6 +283,13 @@ OS_Status SemaphoreAcquire(SemaphoreHandle handle, uint32_t timeout){
     return osOK;
 }
 
+
+
+/********************************************************************************************************
+MUTEX FUNCTIONS
+*********************************************************************************************************/
+
+
 MutexHandle CreateMutex(void){      // Returns handle to mutex
 	MutexHandle handle = malloc(sizeof(MutexContext));
     if (!handle){
@@ -395,6 +403,12 @@ OS_Status MutexAcquire(MutexHandle handle, uint32_t timeout){
     return osOK;
 }
 
+
+
+
+/********************************************************************************************************
+IDLE PROCESS Functions
+*********************************************************************************************************/
 
 
 // weak idle process, can be overwritten with a custom one

@@ -100,7 +100,8 @@ bool IsTaskSuspended(TaskHandle handle);
 
 
 /********************************************************************************************
-*   Removes a task from system, switches to another task if currently running
+*   Removes a task from system, switches to another task if currently running -
+*    Not Yet Implemented
 *********************************************************************************************/
 void DeleteTask(TaskHandle handle);
 
@@ -114,8 +115,7 @@ OS_Status OsInitialize(uint32_t ticksPerSec);
 
 
 /********************************************************************************************
-*   This is a generic comment block that will tell us what the following function
-*   is supposed to do.
+*  	Hands control to the RTOS Kernel
 *********************************************************************************************/
 OS_Status OsStart(void);
 
@@ -123,15 +123,13 @@ OS_Status OsStart(void);
 
 /********************************************************************************************
 *   Halts Kernel Operation
-*
 *********************************************************************************************/
 void OsStop(void);
 
 
 
 /********************************************************************************************
-*	Uninitializes Kernel, cleaning up remaining tasks as well as TCB
-*
+*	Uninitializes Kernel, cleaning up remaining tasks as well as TCB Not yet implemented
 *********************************************************************************************/
 void OsKill(void);
 
