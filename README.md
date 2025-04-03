@@ -25,5 +25,7 @@ Many of the functions in this library may rely on heap memory, so the programmer
 - [OsDelay](Documentation/Functions/OsDelay.md)
 - [Semaphore Functions](Documentation/Functions/Semaphores.md)
 - [Mutex Functions](Documentation/Functions/Mutexes.md)
+- [Atomic Functions](Documentation/Functions/Atomics.md)
 
 
+<!-- ## Scheduler -->
