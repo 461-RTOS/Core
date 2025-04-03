@@ -196,7 +196,7 @@ OS_Status SemaphoreRelease(SemaphoreHandle handle){
     if (handle->taskCount == 0){								// if no tasks are available, release semaphore
 		handle->semaphoreAcquired = false;
 		AtomicInternalStop();
-		return osOK;
+		return osErrorResource;									// Resource Unavailable Error returned if semaphore already released
     }
     TaskHandle bestCandidate = NULL;
     for (int i = 0; i < handle->taskCount; i++){				// if tasks are available, give one permission to acquire it (leave acquired internally)
