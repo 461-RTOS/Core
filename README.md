@@ -24,5 +24,6 @@ Many of the functions in this library may rely on heap memory, so the programmer
 - [OsStart and OsStop](Documentation/Functions/OsStart.md)
 - [OsDelay](Documentation/Functions/OsDelay.md)
 - [Semaphore Functions](Documentation/Functions/Semaphores.md)
+- [Mutex Functions](Documentation/Functions/Mutexes.md)
 
 
