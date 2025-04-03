@@ -45,7 +45,7 @@ TaskHandle CreateTask(Task task, size_t stackSize, void * args, void ** retVal, 
     // these values need to be initialized so when a context switch occurs, these values start the task properly for the first time.
     handle->contextBuffer.r0 = (uint32_t) args;			// Store args as parameter 1 in r0
     handle->contextBuffer.PC = ((uint32_t) task) & (~(0x00000001));			// Store beginning of function address as PC value to start executing at (need to clear thumb-bit)
-    handle->contextBuffer.LR = (uint32_t) returnRoutine;// Return Routine stored in Link Register so if function terminates, it enters a routine designed to clean up the task
+    handle->contextBuffer.LR = (uint32_t) returnRoutine | 0x1;// Return Routine stored in Link Register so if function terminates, it enters a routine designed to clean up the task the bitwise OR 0x1 adds the thumb bit to the return
     handle->contextBuffer.sp = (uint32_t) stack + (stackSize * 4) + 4;		// tail of stack is set to stack pointer; stack pointer is incremented to the head
     handle->contextBuffer.sp -= 36;					// adjust for proper context switching
     handle->contextBuffer.sp &= ~((uint32_t) 0x7);		// lower 3 bits are cleared for 8 byte alignment of stack
