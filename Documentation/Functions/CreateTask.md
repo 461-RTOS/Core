@@ -134,10 +134,10 @@ Here, we can see that kernel tasks are reallocated to be contiguous. If a contig
 
 Future implementatiions may address this fragmentation, and allocate larger blocks initially to minimize fragmentation.
 
-In addition to this, which theoretically only needs to allocate an additional 4 bytes to the Kernel's task list, The function allocates 26 words (104 bytes) to the Task's Task Control Block.
+In addition to this, which theoretically only needs to allocate an additional 4 bytes to the Kernel's task list, The function allocates 27 words (112 bytes) to the Task's Task Control Block.
 
 Lastly, Stack allocation allocates 1 word more than the requested stack size.
 
 The following formula indicates the minimum memory allocation of a successful task creation in bytes, where $x$ represents the number of words to allocate stack size:
 
-$` s(x) = 108 + 4x + 4 `$
+$` s(x) = 112 + 4x + 4 `$
