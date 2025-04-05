@@ -28,11 +28,15 @@ This function must be designed to take a void pointer as a parameter, and return
 
 The second argument is the stack size in 4-byte words. The programmer must evaluate how much stack space the task may need in order to avoid stack overflows while still using memory sparingly.
 
-According the the AAPCS states that the stack must be 8-byte aligned on function calls. However, memory allocation is only aligned to 4-byte boundaries. To compensate for this, 4 bytes are added to the stack allocation in order to ansure the stack available to the task is at least what was requested from the programmer. This is then aigned to the 8-byte address boundary by clearing the lower three bits of the stack pointer for the task, thus decrementing the stack pointer up to 4 bytes to ensure alignment compliance with the AAPCS.
+According the the AAPCS states that the stack must be 8-byte aligned on function calls. However, memory allocation is only aligned to 4-byte boundaries. To compensate for this, 4 bytes are added to the stack allocation in order to ensure the stack available to the task is at least what was requested from the programmer. This is then aigned to the 8-byte address boundary by clearing the lower three bits of the stack pointer for the task, thus decrementing the stack pointer up to 4 bytes to ensure alignment compliance with the AAPCS.
 
 In mantaining this 8-byte alignment while preserving volatile registers during an interrupt call including context switches, the interrupt decrements the process stack pointer (PSP) by up to 36 bytes (32 if already aligned) when saving context.
 
-![](./../media/Exception%20Stack%20Frame.png)
+||
+|:-:|
+|![](./../media/Exception%20Stack%20Frame.png)|
+|*The Exception Stack Frame as Described by the Armv7-M Architecture Reference Manual*|
+||
 
 The programmer is responsible for allocating at least enough stack space for the interrupt to save context with (9 words). Realistically, most stacks will need to be much larger than this size, particularly if the task is not written in assembly where the user cannot manage stack usage as precisely.
 
@@ -140,6 +144,6 @@ In addition to this, which theoretically only needs to allocate an additional 4 
 
 Lastly, Stack allocation allocates 1 word more than the requested stack size.
 
-The following formula indicates the minimum memory allocation of a successful task creation in bytes, where $x$ represents the number of words to allocate stack size:
+The following formula indicates the minimum memory allocation of a successful task creation in bytes, where $` n `$ represents the number of words to allocate stack size:
 
-$` s(x) = 112 + 4x + 4 `$
+>   $` s(n) = 112 + 4n + 4 `$
