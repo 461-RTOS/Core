@@ -10,7 +10,7 @@ The Opportunistic and Uncompromised Real-Time Operating System is a Real-Time Op
 
 Based on these principles, OURTOS intends to be an easy-to-use General-Purpose RTOS.
 
-
+See [Getting Started](Documentation/Getting%20Started/GettingStarted.md) to walk through the process of setting up code to run OURTOS.
 
 ## Functions
 
@@ -28,4 +28,8 @@ Many of the functions in this library may rely on heap memory, so the programmer
 - [Atomic Functions](Documentation/Functions/Atomics.md)
 
 
-<!-- ## Scheduler -->
+## Scheduler
+
+OURTOS implements a preemptive task scheduler to seamlessly schedule tasks according to their priority and last run time.
+
+See [Task Scheduler](Documentation/Task%20Scheduler/Scheduler.md) for more information.
