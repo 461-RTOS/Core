@@ -32,6 +32,8 @@ According the the AAPCS states that the stack must be 8-byte aligned on function
 
 In mantaining this 8-byte alignment while preserving volatile registers during an interrupt call including context switches, the interrupt decrements the process stack pointer (PSP) by up to 36 bytes (32 if already aligned) when saving context.
 
+![](./../media/Exception%20Stack%20Frame.png)
+
 The programmer is responsible for allocating at least enough stack space for the interrupt to save context with (9 words). Realistically, most stacks will need to be much larger than this size, particularly if the task is not written in assembly where the user cannot manage stack usage as precisely.
 
 ## Argument 3: Arguments
