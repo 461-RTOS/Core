@@ -1,6 +1,6 @@
 # OURTOS
 
-The Opportunistic and Uncompromised Real-Time Operating System is a Real-Time Operating system focused on several core principles:
+The Opportunistic and Uncompromised Real-Time Operating System is a Real-Time Operating System focused on several core principles:
 
 - Ease of Use
 - Scalability
