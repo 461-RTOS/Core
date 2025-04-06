@@ -51,7 +51,7 @@ The `AtomicStop` function is used to end an Atomic Block, restoring the previous
     AtomicStatus AtomicStop(void);
 ```
 
-Notice 1: Notice 1: Atomic Blocks will prevent context switching, and are not automatically ended. It is the Responsibility of the programmer to manually end an atomic block. Atomic Blocks started with `AtomicStart` must ALWAYS be terminated with `AtomicStop`\
+Notice 1: Atomic Blocks will prevent context switching, and are not automatically ended. It is the Responsibility of the programmer to manually end an atomic block. Atomic Blocks started with `AtomicStart` must ALWAYS be terminated with `AtomicStop`
 
 ### Return Value:
 
