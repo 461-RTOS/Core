@@ -26,6 +26,7 @@ Many of the functions in this library may rely on heap memory, so the programmer
 - [Semaphore Functions](Documentation/Functions/Semaphores.md)
 - [Mutex Functions](Documentation/Functions/Mutexes.md)
 - [Atomic Functions](Documentation/Functions/Atomics.md)
+- [Suspend Functions](Documentation/Functions/Suspend.md)
 
 
 ## Scheduler
