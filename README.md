@@ -12,6 +12,8 @@ Based on these principles, OURTOS intends to be an easy-to-use General-Purpose R
 
 See [Getting Started](Documentation/Getting%20Started/GettingStarted.md) to walk through the process of setting up code to run OURTOS.
 
+Also check out our [video demo](https://youtu.be/PmBWZcWZDZo) for more insights!
+
 ## Functions
 
 There are many Functions exposed to the programmer to abstract away from the Nuances of the RTOS. This section intends to explain the functionality of each function, while still making the memory utilization of the system clear for the user.
