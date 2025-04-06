@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-typedef struct TaskControlBlock TaskControlBlock;
+typedef struct TaskControlBlock TaskControlBlock;		// These definitions must be BEFORE RTOS.h is included to avoid conflicts with definitions
 typedef TaskControlBlock* TaskHandle;
 #include "RTOS.h"
 #include "queue.h"
