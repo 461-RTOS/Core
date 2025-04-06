@@ -1,6 +1,10 @@
 # Semaphores
 
-Binary semaphores are implemented into OURTOS as an effective method for Tasks to be signaled by interrupts, or other tasks. The RTOS provides three main functions for Semaphores.
+Binary semaphores are implemented into OURTOS as an effective method for Tasks to be signaled by interrupts, or other tasks. Semaphores manage tasks by putting them to sleep and waking them up by switching between the tasks between the `Blocked` and `Ready` states.
+
+*For more information on the `Blocked` and `Ready` states, see [Task Scheduler](./../Task%20Scheduler/Scheduler.md)*
+
+The RTOS provides three main functions for Semaphores:
 
 - CreateBinarySemaphore
 - SemaphoreRelease
@@ -68,7 +72,8 @@ The handle of a created semaphore can be used to identify the semaphore that sho
 
 ## SemaphoreAcquire
 
-Calling `SemaphoreAcquire` causes a task to attempt to acquire the semaphore whose handle was passed as an argument. If the semaphore is not available, then the task is added to a list of tasks waiting for the semaphore to become available, and is marked as `Blocked`. If the semaphore times out, the task will continue without acquiring the semaphore
+Calling `SemaphoreAcquire` causes a task to attempt to acquire the semaphore whose handle was passed as an argument. If the semaphore is not available, then the task is added to a list of tasks waiting for the semaphore to become available, and is marked as `Blocked`. If the semaphore times out, the task will continue without acquiring the semaphore.
+
 
 `SemaphoreAcquire` takes a `SemaphoreHandle`, and an unsigned 32-bit integer as parameters, and returns an OS_Status signal:
 

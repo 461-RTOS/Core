@@ -1,6 +1,11 @@
 # Mutexes
 
-Mutexes are implemented into OURTOS as an effective method for Tasks to be avoid race conditions when using a shared resource.
+Mutexes are implemented into OURTOS as an effective method for Tasks to be avoid race conditions when using a shared resource. Tasks trying to acquire an acquired Mutex are put to sleep by being set to the `Blocked` state, and woken up by returning tasks to the `Ready` state.
+
+*For more information on the `Blocked` and `Ready` states, see [Task Scheduler](./../Task%20Scheduler/Scheduler.md)*
+
+
+The RTOS provides three main functions for Mutexes:
 
 - CreateMutex
 - MutexRelease
