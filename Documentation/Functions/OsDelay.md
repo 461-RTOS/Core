@@ -9,3 +9,5 @@ The `OsDelay` function takes an unsigned 32-bit integer as a parameter to specif
 ```
 
 During a task's delay period where it is marked as `Waiting`, the task can be preempted by other tasks. The same priority rules still apply for all other tasks, meaning tasks of higher priority will always take precedence over lower priority tasks.
+
+*For more information on the `Waiting` state, see [Task Scheduler](./../Task%20Scheduler/Scheduler.md)*
