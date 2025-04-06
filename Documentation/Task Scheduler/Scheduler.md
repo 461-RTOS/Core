@@ -77,4 +77,4 @@ Note that `PRIORITY_IDLE` is reserved for the idle process which is auto-generat
 
 ## Last Runtime
 
-
+When two or more candidates of the highest ready priority are marked as `Ready`, the kernel will prioritize the task with the lowest previous runtime. However, If the currently running task has other `Ready` tasks, the task will be permitted to operate for up to five ticks, even though it may not currently have the lowest previous runtime to prevent unnecessary task switching.
