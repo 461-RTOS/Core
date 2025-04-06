@@ -80,9 +80,12 @@ void ChangeTaskProperties(TaskHandle handle, TaskProperties properties){
 *   Suspends task if active, unsuspends task if suspended
 *   
 *********************************************************************************/
-void ToggleTaskSuspend(TaskHandle handle){
+OS_Status ToggleTaskSuspend(TaskHandle handle){
+	if (handle == NULL)
+		return osErrorParameter;
     handle->User_Properties.isSuspended = !handle->User_Properties.isSuspended;
     handle->suspended = !handle->suspended;
+    return osOK;
 }
 
 /********************************************************************************

@@ -87,7 +87,7 @@ void ChangeTaskProperties(TaskHandle handle, TaskProperties properties);
 *   Suspends task if active, unsuspends task if suspended
 *
 *********************************************************************************/
-void ToggleTaskSuspend(TaskHandle handle);
+OS_Status ToggleTaskSuspend(TaskHandle handle);
 
 
 
